@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DevLearn.Infrastructure": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
