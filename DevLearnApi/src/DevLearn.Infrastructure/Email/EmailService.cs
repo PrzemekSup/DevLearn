@@ -1,4 +1,5 @@
 ﻿using DevLearn.Auth;
+using DevLearn.Helpers;
 using Microsoft.Extensions.Configuration;
 
 namespace DevLearn.Infrastructure.Email;
@@ -10,7 +11,7 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
         var errorHtml = string.Join("<br />", errorMessages);
         var messageHtml = $"<p><b>Wystąpiły poniższe błędy:</b>{errorHtml}</p>";
         var to = new[] { "przemyslaw.supel@gmail.com" };
-        return emailContext.SendHtml(to, "FootRank errors", messageHtml);
+        return emailContext.SendHtml(to, "DevLearn errors", messageHtml);
     }
 
     public Task SendContactMessageAsync(string subject, string content)
@@ -18,12 +19,12 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
         var subjectHtml = $"<p><b>Temat:</b> {subject}</p>";
         var contentHtml = $"<p><b>Wiadomość:</b> {content}</p>";
         var to = new[] { "przemyslaw.supel@gmail.com" };
-        return emailContext.SendHtml(to, "FootRank wiadomość od odwiedzającego", $"{subjectHtml}{contentHtml}");
+        return emailContext.SendHtml(to, "DevLearn wiadomość od odwiedzającego", $"{subjectHtml}{contentHtml}");
     }
 
     public Task SendConfirmationEmailAsync(string email, string userId, string token)
     {
-        var baseUrl = Common.GetConfigurationKey(configuration, "BaseDevLearnUrl");
+        var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
         var urlToConfirm = $"{baseUrl}user/confirmEmail/{userId}/{token}";
         var html = "<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby potwierdzić adres email. " +
             $"Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: '{urlToConfirm}'</div>";
@@ -32,10 +33,10 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
 
     public Task SendForgotPasswordLinkAsync(string userId, string email, string forgotPasswordKey)
     {
-        var baseUrl = Common.GetConfigurationKey(configuration, "BaseDevLearnUrl");
+        var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
         var urlToConfirm = $"{baseUrl}forgotpasswordform?u={userId}&k={forgotPasswordKey}";
         var html = $"<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby zrestartować swoje hasło. " +
             $"<br />Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: '{urlToConfirm}'</div>";
-        return emailContext.SendHtml([email], "Zresetuj hasło - FootRank", html);
+        return emailContext.SendHtml([email], "Zresetuj hasło - DevLearn", html);
     }
 }

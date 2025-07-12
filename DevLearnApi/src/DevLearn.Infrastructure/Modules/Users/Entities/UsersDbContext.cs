@@ -14,7 +14,6 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : Identity
         base.OnModelCreating(builder);
         builder.HasDefaultSchema("dev");
         LowerCaseAllGenericTables(builder);
-        //builder.HasAnnotation("Relational:HistoryTableName", "__UsersMigrationsHistory");
 
         builder.Entity<RefreshToken>().ToTable("refreshtoken");
         builder.ApplyConfiguration(new ApplicationUserConfiguration());

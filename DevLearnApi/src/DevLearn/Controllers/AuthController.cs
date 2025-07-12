@@ -14,7 +14,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         var result = await authService.RegisterAsync(request);
-        return Ok(result.Success ? "Registered. Please confirm your email." : result.Errors[0]);
+        return Ok(result);
     }
 
     [HttpPost("login")]
@@ -45,28 +45,28 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
     {
-        var result = await authService.ConfirmEmail(userId, token);
+        var result = await authService.ConfirmEmailAsync(userId, token);
         return Ok(result);
     }
 
     [HttpPost("resend-confirmation")]
     public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationRequest request)
     {
-        var result = await authService.ResendConfirmationEmail(request.Email);
+        var result = await authService.ResendConfirmationEmailAsync(request.Email);
         return Ok(result);
     }
 
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
-        var result = await authService.ForgotPassword(request);
+        var result = await authService.ForgotPasswordAsync(request);
         return Ok(result);
     }
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        var result = await authService.ResetPassword(request);
+        var result = await authService.ResetPasswordAsync(request);
         return Ok(result);
     }
 }

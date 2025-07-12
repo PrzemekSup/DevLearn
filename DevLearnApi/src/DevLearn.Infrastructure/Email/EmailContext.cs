@@ -13,6 +13,7 @@ public class EmailContext(
     {
         if (!IsEnabled)
         {
+            // TODO: Logging
             return Task.CompletedTask;
         }
 
@@ -22,6 +23,7 @@ public class EmailContext(
         };
 
         var emailMessage = PrepareEmail(to, emailContent);
+        // TODO: Logging
         return _emailClient.SendAsync(Azure.WaitUntil.Completed, emailMessage);
     }
 
@@ -29,6 +31,7 @@ public class EmailContext(
     {
         if (!IsEnabled)
         {
+            // TODO: Logging
             return Task.CompletedTask;
         }
 
@@ -38,6 +41,7 @@ public class EmailContext(
         };
 
         var emailMessage = PrepareEmail(to, emailContent);
+        // TODO: Logging
         return _emailClient.SendAsync(Azure.WaitUntil.Completed, emailMessage);
     }
 

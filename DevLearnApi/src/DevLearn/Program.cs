@@ -2,6 +2,7 @@ using Azure.Identity;
 using DevLearn.Auth;
 using DevLearn.Auth.IRepository;
 using DevLearn.Auth.Token;
+using DevLearn.Helpers;
 using DevLearn.Infrastructure.Email;
 using DevLearn.Infrastructure.Modules.Users.Entities;
 using DevLearn.Infrastructure.Modules.Users.Repositories;
@@ -18,8 +19,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // === Configuration ===
-string appConfigEndpoint = Common.GetConfigurationKey(builder, "AzureAppConfiguration");
-var postgreConnectionString = Common.GetConfigurationKey(builder, "PostgreConnectionString");
+string appConfigEndpoint = builder.Configuration.GetSafeConfigurationKey("AzureAppConfiguration");
+var postgreConnectionString = builder.Configuration.GetSafeConfigurationKey("PostgreConnectionString");
 
 builder.Configuration.AddAzureAppConfiguration(options =>
 {
@@ -49,7 +50,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // === Redis ===
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(GetConnectionString(builder, "Redis")));
+    ConnectionMultiplexer.Connect(builder.Configuration.GetSafeConnectionString("Redis")));
 
 // === Custom Services ===
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -58,8 +59,8 @@ builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 ConfigureEmail.Configure(builder);
 
 // === JWT Authentication ===
-var jwtKey = Common.GetConfigurationKey(builder, "DevJwtKey");
-var jwtIssuer = Common.GetConfigurationKey(builder, "DevJwtIssuer");
+var jwtKey = builder.Configuration.GetSafeConfigurationKey("DevJwtKey");
+var jwtIssuer = builder.Configuration.GetSafeConfigurationKey("DevJwtIssuer");
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
 builder.Services.AddAuthentication(options =>
@@ -146,14 +147,3 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 app.Run();
-
-static string GetConnectionString(WebApplicationBuilder builder, string key)
-{
-    var result = builder.Configuration.GetConnectionString(key);
-    if (string.IsNullOrEmpty(result))
-    {
-        throw new Exception($"Error on initialization. Missing ConnectionString '{key}'");
-    }
-
-    return result;
-}

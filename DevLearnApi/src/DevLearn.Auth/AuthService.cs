@@ -2,6 +2,7 @@
 using DevLearn.Auth.Dtos;
 using DevLearn.Auth.IRepository;
 using DevLearn.Auth.Token;
+using DevLearn.Helpers;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Security.Claims;
@@ -34,21 +35,23 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return new ValidationStateDto(false, string.Empty, [.. result.Errors.Select(x => x.Description)]);
+            var errorGuid = Guid.NewGuid();
+            // TODO: Logging with errorGUid and result.Errors.Select(x => x.Description)
+            return new ValidationStateDto(false, "", [$"Wystąpił problem podczas rejestracji użytkownika. Kod błędu: '{errorGuid}'"]);
         }
 
         var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedToken = WebUtility.UrlEncode(confirmToken);
         await emailService.SendConfirmationEmailAsync(user.Email, user.Id, encodedToken);
 
-        return new ValidationStateDto(true, string.Empty, []);
+        return new ValidationStateDto(true, $"Dziękuje za rejestrację {user.UserName}. Wysłaliśmy wiadomość e-mail na '{user.Email}'. Proszę potwierdź swoje konto.", []);
     }
 
     public async Task<TokenResponse> LoginAsync(LoginRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null || !await userManager.CheckPasswordAsync(user, request.Password))
-            throw new UnauthorizedAccessException("Nieprawidłowe hasło");
+            throw new UnauthorizedAccessException("Nieprawidłowa adres e-mail lub hasło.");
 
         if (!await userManager.IsEmailConfirmedAsync(user))
             throw new UnauthorizedAccessException("Potwierdz adres email.");
@@ -59,7 +62,10 @@ public class AuthService(UserManager<ApplicationUser> userManager,
     public async Task<TokenResponse> RefreshTokenAsync(RefreshRequest request)
     {
         if (await tokenService.IsTokenBlacklistedAsync(request.RefreshToken))
-            throw new UnauthorizedAccessException("Token został unieważniony");
+        {
+            // TODO: Logging
+            throw new UnauthorizedAccessException("Token został unieważniony. Spróbuj się wylogować i zalogować jeszcze raz.");
+        }
 
         return await tokenService.RefreshTokensAsync(request);
     }
@@ -71,30 +77,33 @@ public class AuthService(UserManager<ApplicationUser> userManager,
     #endregion BasicActions
 
     #region EmailConfirmation
-    public async Task<ValidationStateDto> ConfirmEmail(string userId, string token)
+    public async Task<ValidationStateDto> ConfirmEmailAsync(string userId, string token)
     {
         var user = await userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            return new ValidationStateDto(false, string.Empty, ["Wystąpił problem z użytkownikiem. Skontaktuj się z nami!"]);
+            // TODO: Logging
+            return new ValidationStateDto(false, string.Empty, ["Wystąpił problem z użytkownikiem. Spróbuj ponownie, możesz wysłać jeszcze raz e-mail potwierdzający!"]);
         }
 
         var decodedToken = WebUtility.UrlDecode(token);
         var result = await userManager.ConfirmEmailAsync(user, decodedToken);
         if (!result.Succeeded)
         {
+            // TODO: Logging
             return new ValidationStateDto(false, string.Empty, ["Kod jest już nieważny."]);
         }
 
         return new ValidationStateDto(true, "E-mail został potwierdzony", []);
     }
 
-    public async Task<ValidationStateDto> ResendConfirmationEmail(string email)
+    public async Task<ValidationStateDto> ResendConfirmationEmailAsync(string email)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            return new ValidationStateDto(false, string.Empty, [$"Nie odnaleziono użytkownika z adresem e-mail '{email}'."]);
+            // TODO: Logging
+            return new ValidationStateDto(false, $"Jeżeli istnieje użytkownik o adresie '{email}', link zostanie wysłany ponownie. Jeżeli nie dostaniesz wiadomości w ciągu kilku minut, sprawdź SPAM oraz to, czy podano prawidłowy adres.", []);
         }
 
         if (await userManager.IsEmailConfirmedAsync(user))
@@ -111,37 +120,41 @@ public class AuthService(UserManager<ApplicationUser> userManager,
     #endregion EmailConfirmation
 
     #region ForgotPassword
-    public async Task<ValidationStateDto> ForgotPassword(ForgotPasswordRequest request)
+    public async Task<ValidationStateDto> ForgotPasswordAsync(ForgotPasswordRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user != null && !(await userManager.IsEmailConfirmedAsync(user)))
         {
+            // TODO: Logging
             return new ValidationStateDto(false, string.Empty, ["Adres e-mail nie został jeszcze potwierdzony po rejestracji"]);
         }
         if (user == null)
         {
-            return new ValidationStateDto(false, string.Empty, ["Jeżeli podano zarejestrowany adres e-mail, to link do resetu hasła został wysłany."]);
+            // TODO: Logging
+            return new ValidationStateDto(false, "Jeżeli podano zarejestrowany adres e-mail, link do resetu hasła został wysłany.", []);
         }
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = WebUtility.UrlEncode(token);
 
         await emailService.SendForgotPasswordLinkAsync(user.Id, user.Email!, encodedToken);
-        return new ValidationStateDto(true, "Jeżeli podano zarejestrowany adres e-mail, to link do resetu hasła został wysłany.", []);
+        return new ValidationStateDto(true, "Jeżeli podano zarejestrowany adres e-mail, link do resetu hasła został wysłany.", []);
     }
 
-    public async Task<ValidationStateDto> ResetPassword(ResetPasswordRequest request)
+    public async Task<ValidationStateDto> ResetPasswordAsync(ResetPasswordRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            return new ValidationStateDto(false, "", ["Invalid request"]);
+            return new ValidationStateDto(false, "", [$"Wystąpił problem z użytkownikiem '{request.Email}' podczas próby zmiany hasła."]);
         }
 
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
         if (!result.Succeeded)
         {
-            return new ValidationStateDto(false, "", [.. result.Errors.Select(x => x.Description)]);
+            var errorGuid = Guid.NewGuid();
+            // TODO: Logging with errorGUid and result.Errors.Select(x => x.Description)
+            return new ValidationStateDto(false, "", [$"Wystąpił problem ze zresetowaniem hasła. Kod błędu: '{errorGuid}'"]);
         }
 
         return new ValidationStateDto(true, "Hasło zostało zresetowane.", []);
@@ -164,15 +177,19 @@ public class AuthService(UserManager<ApplicationUser> userManager,
 
     private async Task<TokenResponse> ExternalLogin()
     {
-        var info = await signInManager.GetExternalLoginInfoAsync() ?? throw new Exception("Login failed");
+        var info = await signInManager.GetExternalLoginInfoAsync() ?? throw new Exception("Problem z połączeniem do providera 'Name'.");
         var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
 
-        ApplicationUser user;
+        ApplicationUser? user;
 
         if (result.Succeeded)
         {
-            user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey)
-                ?? throw new Exception("User did not found by login");
+            user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (user == null)
+            {
+                // TODO: Logging - signed in, but not found.
+                throw new Exception($"Wystąpił problem z użytkownikiem .");
+            }
         }
         else
         {
@@ -228,7 +245,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         }
 
         // unique
-        var (uniqueEmail, uniqueUsername) = await authRepository.VerifyUnique(request.Email, request.UserName);
+        var (uniqueEmail, uniqueUsername) = await authRepository.VerifyUniqueAsync(request.Email, request.UserName);
         if (!uniqueEmail)
         {
             errors.Add($"Użytkownik z e-mailem '{request.Email}' już istnieje.");

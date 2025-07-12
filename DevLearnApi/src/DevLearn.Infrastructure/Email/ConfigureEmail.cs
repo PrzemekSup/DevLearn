@@ -1,4 +1,5 @@
 ﻿using DevLearn.Auth;
+using DevLearn.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,9 +9,9 @@ public static class ConfigureEmail
 {
     public static void Configure(this WebApplicationBuilder builder)
     {
-        var isEnabled = bool.Parse(Common.GetConfigurationKey(builder, "EmailConfiguration:Enabled"));
-        var connectionString = Common.GetConfigurationKey(builder, "EmailConfiguration:ConnectionString");
-        var sender = Common.GetConfigurationKey(builder, "EmailConfiguration:Sender");
+        var isEnabled = bool.Parse(builder.Configuration.GetSafeConfigurationKey("EmailConfiguration:Enabled"));
+        var connectionString = builder.Configuration.GetSafeConfigurationKey("EmailConfiguration:ConnectionString");
+        var sender = builder.Configuration.GetSafeConfigurationKey("EmailConfiguration:Sender");
 
         builder.Services.AddSingleton(new EmailContext(isEnabled, connectionString, sender));
         builder.Services.AddScoped<IEmailService, EmailService>();

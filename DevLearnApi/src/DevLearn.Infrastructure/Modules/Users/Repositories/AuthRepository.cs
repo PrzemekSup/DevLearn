@@ -7,7 +7,7 @@ namespace DevLearn.Infrastructure.Modules.Users.Repositories;
 
 public class AuthRepository(UsersDbContext context) : IAuthRepository
 {
-    public async Task<(bool uniqueEmail, bool uniqueUsername)> VerifyUnique(string email, string username)
+    public async Task<(bool uniqueEmail, bool uniqueUsername)> VerifyUniqueAsync(string email, string username)
     {
         var normalizedEmail = email.ToUpperInvariant();
         var normalizedUsername = username.ToUpperInvariant();

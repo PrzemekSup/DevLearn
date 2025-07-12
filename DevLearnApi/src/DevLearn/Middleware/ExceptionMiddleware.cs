@@ -13,6 +13,7 @@ namespace DevLearn.Middleware
             }
             catch (Exception ex)
             {
+                // TODO: Logging
                 logger.LogError(ex, "Unhandled exception");
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";

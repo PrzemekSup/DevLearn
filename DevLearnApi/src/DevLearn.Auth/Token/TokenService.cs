@@ -1,5 +1,6 @@
 ﻿using DevLearn.Auth.Dto;
 using DevLearn.Auth.IRepository;
+using DevLearn.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -33,8 +34,13 @@ public class TokenService(
 
     public async Task<TokenResponse> RefreshTokensAsync(RefreshRequest request)
     {
-        var user = await authRepository.GetTokenToRefreshAsync(request.RefreshToken)
-            ?? throw new SecurityTokenException("Invalid refresh token");
+        var user = await authRepository.GetTokenToRefreshAsync(request.RefreshToken);
+
+        if (user == null)
+        {
+            // TODO: Logging
+            throw new SecurityTokenException("Nie udało się odświeżenie tokena. Użytkownik będzie wylogowany.");
+        }
 
         var newToken = await GenerateJwtToken(user);
         var newRefresh = GenerateSecureToken();
@@ -70,13 +76,13 @@ public class TokenService(
         var roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var jwtKey = Common.GetConfigurationKey(configuration, "DevJwtKey");
+        var jwtKey = configuration.GetSafeConfigurationKey("DevJwtKey");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: Common.GetConfigurationKey(configuration, "DevJwtIssuer"),
-            audience: Common.GetConfigurationKey(configuration, "DevJwtAudience"),
+            issuer: configuration.GetSafeConfigurationKey("DevJwtIssuer"),
+            audience: configuration.GetSafeConfigurationKey("DevJwtAudience"),
             claims: claims,
             expires: DateTime.UtcNow.Add(accessTokenLifetime),
             signingCredentials: creds);
