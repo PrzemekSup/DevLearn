@@ -44,7 +44,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,
         var encodedToken = WebUtility.UrlEncode(confirmToken);
         await emailService.SendConfirmationEmailAsync(user.Email, user.Id, encodedToken);
 
-        return new ValidationStateDto(true, $"Dziękuje za rejestrację {user.UserName}. Wysłaliśmy wiadomość e-mail na '{user.Email}'. Proszę potwierdź swoje konto.", []);
+        return new ValidationStateDto(true, $"Dziękujemy za rejestrację {user.UserName}. Wysłaliśmy wiadomość e-mail na '{user.Email}'. Proszę potwierdź swoje konto.", []);
     }
 
     public async Task<TokenResponse> LoginAsync(LoginRequest request)

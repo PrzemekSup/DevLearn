@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DevLearn.Infrastructure.Modules.Users.Entities;
+namespace DevLearn.Infrastructure.Modules.Users.Entities.Configurations;
 
 internal class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {

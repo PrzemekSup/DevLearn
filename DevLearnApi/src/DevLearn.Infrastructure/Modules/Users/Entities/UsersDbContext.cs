@@ -1,4 +1,5 @@
 ﻿using DevLearn.Auth;
+using DevLearn.Infrastructure.Modules.Users.Entities.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,13 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : Identity
 
         builder.Entity<RefreshToken>().ToTable("refreshtoken");
         builder.ApplyConfiguration(new ApplicationUserConfiguration());
+        builder.ApplyConfiguration(new IdentityRoleConfiguration());
+        builder.ApplyConfiguration(new IdentityUserClaimConfiguration());
+        builder.ApplyConfiguration(new IdentityUserLoginConfiguration());
+        builder.ApplyConfiguration(new IdentityUserRoleConfiguration());
+        builder.ApplyConfiguration(new IdentityRoleClaimConfiguration());
+        builder.ApplyConfiguration(new IdentityUserTokenConfiguration());
+        builder.ApplyConfiguration(new RefreshTokenConfiguration());
 
     }
 
