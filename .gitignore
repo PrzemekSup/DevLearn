@@ -55,3 +55,4 @@ nunit-*.xml
 /DevLearnApi/src/.vs
 /.vs
 /ui/.vite/
+/ui/package-lock.json
