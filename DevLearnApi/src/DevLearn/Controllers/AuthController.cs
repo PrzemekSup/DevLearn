@@ -3,6 +3,7 @@ using DevLearn.Auth.Dto;
 using DevLearn.Auth.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace DevLearn.Controllers;
 
@@ -11,6 +12,7 @@ namespace DevLearn.Controllers;
 public class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]
+    [OpenApiOperation("Auth_RegisterUser")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         var result = await authService.RegisterAsync(request);

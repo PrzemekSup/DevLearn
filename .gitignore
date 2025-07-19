@@ -53,3 +53,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 /DevLearnApi/src/.vs
+/.vs
+/ui/.vite/

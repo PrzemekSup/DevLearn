@@ -1,0 +1,38 @@
+{
+  "defaultVariables": null,
+  "documentGenerator": {
+    "aspNetCoreToOpenApi": {
+      "project": "DevLearn.csproj",
+      "msBuildProjectExtensionsPath": "obj",
+      "configuration": "Debug",
+      "targetFramework": "net8.0",
+      "requireParametersWithoutDefault": true,
+      "output": null
+    }
+  },
+  "codeGenerators": {
+    "openApiToTypeScriptClient": {
+      "className": "ApiClient",
+      "operationGenerationMode": "SingleClientFromOperationId",
+      "template": "Fetch",
+      "promiseType": "Promise",
+      "useTransformOptionsMethod": false,
+      "useTransformResultMethod": false,
+      "generateClientClasses": true,
+      "generateClientInterfaces": false,
+      "generateOptionalParameters": true,
+      "exportTypes": true,
+      "typeScriptGeneratorSettings": {
+        "template": "Default",
+        "typeStyle": "Class",
+        "nullValue": "Undefined",
+        "enumStyle": "StringLiteral",
+        "generateConstructorInterface": true,
+        "generateDefaultValues": true,
+        "generateCloneMethod": false,
+        "importRequiredTypes": true
+      },
+      "output": "../../../ui/client.ts"
+    }
+  }
+}
