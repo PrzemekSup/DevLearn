@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using System.Text;
 
@@ -103,30 +102,27 @@ builder.Services.AddCors(options =>
 
 // === Swagger ===
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(opt =>
+builder.Services.AddOpenApiDocument(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "DevLearn API", Version = "v1" });
-    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    opt.Title = "DevLearn API";
+    opt.Version = "v1";
+
+    opt.AddSecurity("Bearer", new NSwag.OpenApiSecurityScheme()
     {
         Description = "JWT Authorization header using the Bearer scheme.",
-        Type = SecuritySchemeType.Http,
+        Type = NSwag.OpenApiSecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
         Name = "Authorization"
     });
-    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    opt.PostProcess = document =>
     {
-        {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            []
-        }
-    });
+        document.Info.Version = "v1";
+        document.Info.Title = "DevLearn API";
+        document.Info.Description = "REST API for DevLearn.";
+    };
 });
 
 builder.Services.AddControllers();
@@ -141,8 +137,8 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi();
+    app.UseSwaggerUi();
 }
 
 app.MapControllers();

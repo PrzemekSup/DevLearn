@@ -1,8 +1,11 @@
 ﻿using DevLearn.Auth;
 using DevLearn.Auth.Dto;
 using DevLearn.Auth.Dtos;
+using DevLearn.Auth.Token;
+using DevLearn.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace DevLearn.Controllers;
 
@@ -11,62 +14,56 @@ namespace DevLearn.Controllers;
 public class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    [OpenApiOperation("Auth_RegisterUser")]
+    public async Task<ValidationStateDto> Register(RegisterRequest request)
     {
-        var result = await authService.RegisterAsync(request);
-        return Ok(result);
+        return await authService.RegisterAsync(request);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<TokenResponse> Login(LoginRequest request)
     {
-        var tokens = await authService.LoginAsync(request);
-        return Ok(tokens);
+        return await authService.LoginAsync(request);
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh(RefreshRequest request)
+    public async Task<TokenResponse> Refresh(RefreshRequest request)
     {
-        var tokens = await authService.RefreshTokenAsync(request);
-        return Ok(tokens);
+        return await authService.RefreshTokenAsync(request);
     }
 
     [HttpPost("logout")]
     [Authorize]
-    public async Task<IActionResult> Logout()
+    public async Task<ValidationStateDto> Logout()
     {
         var userId = User.FindFirst("sub")?.Value;
-        if (userId == null) return Unauthorized();
+        if (userId == null) return new ValidationStateDto(true, string.Empty, []);
 
         await authService.LogoutAsync(userId);
-        return Ok("Logged out.");
+        return new ValidationStateDto(true, string.Empty, []);
     }
 
     [HttpGet("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+    public async Task<ValidationStateDto> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
     {
-        var result = await authService.ConfirmEmailAsync(userId, token);
-        return Ok(result);
+        return await authService.ConfirmEmailAsync(userId, token);
     }
 
     [HttpPost("resend-confirmation")]
-    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationRequest request)
+    public async Task<ValidationStateDto> ResendConfirmationEmail([FromBody] ResendConfirmationRequest request)
     {
-        var result = await authService.ResendConfirmationEmailAsync(request.Email);
-        return Ok(result);
+        return await authService.ResendConfirmationEmailAsync(request.Email);
     }
 
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    public async Task<ValidationStateDto> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
-        var result = await authService.ForgotPasswordAsync(request);
-        return Ok(result);
+        return await authService.ForgotPasswordAsync(request);
     }
 
     [HttpPost("reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    public async Task<ValidationStateDto> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        var result = await authService.ResetPasswordAsync(request);
-        return Ok(result);
+        return await authService.ResetPasswordAsync(request);
     }
 }

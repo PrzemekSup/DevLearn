@@ -1,6 +1,8 @@
 ﻿using DevLearn.Auth;
+using DevLearn.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace DevLearn.Controllers;
 
@@ -10,9 +12,10 @@ namespace DevLearn.Controllers;
 public class AdminController(IAuthService authService) : ControllerBase
 {
     [HttpPost("revoke/{userId}")]
-    public async Task<IActionResult> RevokeUserTokens(string userId)
+    [OpenApiOperation("Admin_RevokeUserTokens")]
+    public async Task<ValidationStateDto> RevokeUserTokens(string userId)
     {
         await authService.LogoutAsync(userId);
-        return Ok($"Revoked sessions for user {userId}");
+        return new ValidationStateDto(true, $"Revoked sessions for user {userId}", []);
     }
 }
