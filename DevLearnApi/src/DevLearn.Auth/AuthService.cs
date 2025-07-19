@@ -51,7 +51,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,
     {
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null || !await userManager.CheckPasswordAsync(user, request.Password))
-            throw new UnauthorizedAccessException("Nieprawidłowa adres e-mail lub hasło.");
+            throw new UnauthorizedAccessException("Nieprawidłowy adres e-mail lub hasło.");
 
         if (!await userManager.IsEmailConfirmedAsync(user))
             throw new UnauthorizedAccessException("Potwierdz adres email.");

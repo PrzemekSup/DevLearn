@@ -9,1111 +9,814 @@
 // ReSharper disable InconsistentNaming
 
 export class ApiClient {
-  private http: {
-    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
-  };
-  private baseUrl: string;
-  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
-    undefined;
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-  constructor(
-    baseUrl?: string,
-    http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }
-  ) {
-    this.http = http ? http : (window as any);
-    this.baseUrl = baseUrl ?? "";
-  }
-
-  admin_RevokeUserTokens(userId: string): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Admin/revoke/{userId}";
-    if (userId === undefined || userId === null)
-      throw new Error("The parameter 'userId' must be defined.");
-    url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
-    url_ = url_.replace(/[?&]$/, "");
-
-    let options_: RequestInit = {
-      method: "POST",
-      headers: {
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAdmin_RevokeUserTokens(_response);
-    });
-  }
-
-  protected processAdmin_RevokeUserTokens(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    admin_RevokeUserTokens(userId: string): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Admin/revoke/{userId}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAdmin_RevokeUserTokens(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_RegisterUser(request: RegisterRequest): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/register";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_RegisterUser(_response);
-    });
-  }
-
-  protected processAuth_RegisterUser(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAdmin_RevokeUserTokens(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_RegisterUser(request: RegisterRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/register";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_RegisterUser(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_Login(request: LoginRequest): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/login";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_Login(_response);
-    });
-  }
-
-  protected processAuth_Login(response: Response): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_RegisterUser(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_Login(request: LoginRequest): Promise<TokenResponse> {
+        let url_ = this.baseUrl + "/api/Auth/login";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_Login(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_Refresh(request: RefreshRequest): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/refresh";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_Refresh(_response);
-    });
-  }
-
-  protected processAuth_Refresh(response: Response): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_Login(response: Response): Promise<TokenResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TokenResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TokenResponse>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_Refresh(request: RefreshRequest): Promise<TokenResponse> {
+        let url_ = this.baseUrl + "/api/Auth/refresh";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_Refresh(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_Logout(): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/logout";
-    url_ = url_.replace(/[?&]$/, "");
-
-    let options_: RequestInit = {
-      method: "POST",
-      headers: {
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_Logout(_response);
-    });
-  }
-
-  protected processAuth_Logout(response: Response): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_Refresh(response: Response): Promise<TokenResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TokenResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TokenResponse>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_Logout(): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_Logout(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_ConfirmEmail(
-    userId?: string | undefined,
-    token?: string | undefined
-  ): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/confirm-email?";
-    if (userId === null)
-      throw new Error("The parameter 'userId' cannot be null.");
-    else if (userId !== undefined)
-      url_ += "userId=" + encodeURIComponent("" + userId) + "&";
-    if (token === null)
-      throw new Error("The parameter 'token' cannot be null.");
-    else if (token !== undefined)
-      url_ += "token=" + encodeURIComponent("" + token) + "&";
-    url_ = url_.replace(/[?&]$/, "");
-
-    let options_: RequestInit = {
-      method: "GET",
-      headers: {
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_ConfirmEmail(_response);
-    });
-  }
-
-  protected processAuth_ConfirmEmail(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_Logout(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_ConfirmEmail(userId?: string | undefined, token?: string | undefined): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/confirm-email?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&";
+        if (token === null)
+            throw new Error("The parameter 'token' cannot be null.");
+        else if (token !== undefined)
+            url_ += "token=" + encodeURIComponent("" + token) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_ConfirmEmail(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_ResendConfirmationEmail(
-    request: ResendConfirmationRequest
-  ): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/resend-confirmation";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_ResendConfirmationEmail(_response);
-    });
-  }
-
-  protected processAuth_ResendConfirmationEmail(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_ConfirmEmail(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_ResendConfirmationEmail(request: ResendConfirmationRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/resend-confirmation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_ResendConfirmationEmail(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_ForgotPassword(request: ForgotPasswordRequest): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/forgot-password";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_ForgotPassword(_response);
-    });
-  }
-
-  protected processAuth_ForgotPassword(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_ResendConfirmationEmail(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_ForgotPassword(request: ForgotPasswordRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/forgot-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_ForgotPassword(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  auth_ResetPassword(request: ResetPasswordRequest): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/Auth/reset-password";
-    url_ = url_.replace(/[?&]$/, "");
-
-    const content_ = JSON.stringify(request);
-
-    let options_: RequestInit = {
-      body: content_,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processAuth_ResetPassword(_response);
-    });
-  }
-
-  protected processAuth_ResetPassword(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_ForgotPassword(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    auth_ResetPassword(request: ResetPasswordRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/reset-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuth_ResetPassword(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  externalLogin_ExternalLogin(
-    provider: string,
-    returnUrl?: string | undefined
-  ): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/ExternalLogin/external-login/{provider}?";
-    if (provider === undefined || provider === null)
-      throw new Error("The parameter 'provider' must be defined.");
-    url_ = url_.replace("{provider}", encodeURIComponent("" + provider));
-    if (returnUrl === null)
-      throw new Error("The parameter 'returnUrl' cannot be null.");
-    else if (returnUrl !== undefined)
-      url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
-    url_ = url_.replace(/[?&]$/, "");
-
-    let options_: RequestInit = {
-      method: "GET",
-      headers: {
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processExternalLogin_ExternalLogin(_response);
-    });
-  }
-
-  protected processExternalLogin_ExternalLogin(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processAuth_ResetPassword(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    externalLogin_ExternalLogin(provider: string, returnUrl?: string | undefined): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/ExternalLogin/external-login/{provider}?";
+        if (provider === undefined || provider === null)
+            throw new Error("The parameter 'provider' must be defined.");
+        url_ = url_.replace("{provider}", encodeURIComponent("" + provider));
+        if (returnUrl === null)
+            throw new Error("The parameter 'returnUrl' cannot be null.");
+        else if (returnUrl !== undefined)
+            url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processExternalLogin_ExternalLogin(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
 
-  externalLogin_ExternalLoginCallback(
-    returnUrl?: string | undefined
-  ): Promise<FileResponse> {
-    let url_ = this.baseUrl + "/api/ExternalLogin/external-login-callback?";
-    if (returnUrl === null)
-      throw new Error("The parameter 'returnUrl' cannot be null.");
-    else if (returnUrl !== undefined)
-      url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
-    url_ = url_.replace(/[?&]$/, "");
-
-    let options_: RequestInit = {
-      method: "GET",
-      headers: {
-        Accept: "application/octet-stream",
-      },
-    };
-
-    return this.http.fetch(url_, options_).then((_response: Response) => {
-      return this.processExternalLogin_ExternalLoginCallback(_response);
-    });
-  }
-
-  protected processExternalLogin_ExternalLoginCallback(
-    response: Response
-  ): Promise<FileResponse> {
-    const status = response.status;
-    let _headers: any = {};
-    if (response.headers && response.headers.forEach) {
-      response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+    protected processExternalLogin_ExternalLogin(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
     }
-    if (status === 200 || status === 206) {
-      const contentDisposition = response.headers
-        ? response.headers.get("content-disposition")
-        : undefined;
-      let fileNameMatch = contentDisposition
-        ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(
-            contentDisposition
-          )
-        : undefined;
-      let fileName =
-        fileNameMatch && fileNameMatch.length > 1
-          ? fileNameMatch[3] || fileNameMatch[2]
-          : undefined;
-      if (fileName) {
-        fileName = decodeURIComponent(fileName);
-      } else {
-        fileNameMatch = contentDisposition
-          ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition)
-          : undefined;
-        fileName =
-          fileNameMatch && fileNameMatch.length > 1
-            ? fileNameMatch[1]
-            : undefined;
-      }
-      return response.blob().then((blob) => {
-        return {
-          fileName: fileName,
-          data: blob,
-          status: status,
-          headers: _headers,
+
+    externalLogin_ExternalLoginCallback(returnUrl?: string | undefined): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/ExternalLogin/external-login-callback?";
+        if (returnUrl === null)
+            throw new Error("The parameter 'returnUrl' cannot be null.");
+        else if (returnUrl !== undefined)
+            url_ += "returnUrl=" + encodeURIComponent("" + returnUrl) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
         };
-      });
-    } else if (status !== 200 && status !== 204) {
-      return response.text().then((_responseText) => {
-        return throwException(
-          "An unexpected server error occurred.",
-          status,
-          _responseText,
-          _headers
-        );
-      });
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processExternalLogin_ExternalLoginCallback(_response);
+        });
     }
-    return Promise.resolve<FileResponse>(null as any);
-  }
+
+    protected processExternalLogin_ExternalLoginCallback(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+}
+
+export class ValidationStateDto implements IValidationStateDto {
+    success?: boolean;
+    successMessage?: string;
+    errors?: string[];
+
+    constructor(data?: IValidationStateDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.success = _data["success"];
+            this.successMessage = _data["successMessage"];
+            if (Array.isArray(_data["errors"])) {
+                this.errors = [] as any;
+                for (let item of _data["errors"])
+                    this.errors!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): ValidationStateDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationStateDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["success"] = this.success;
+        data["successMessage"] = this.successMessage;
+        if (Array.isArray(this.errors)) {
+            data["errors"] = [];
+            for (let item of this.errors)
+                data["errors"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IValidationStateDto {
+    success?: boolean;
+    successMessage?: string;
+    errors?: string[];
 }
 
 export class RegisterRequest implements IRegisterRequest {
-  email?: string;
-  userName?: string;
-  password?: string;
+    email?: string;
+    userName?: string;
+    password?: string;
 
-  constructor(data?: IRegisterRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: IRegisterRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.email = _data["email"];
-      this.userName = _data["userName"];
-      this.password = _data["password"];
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.userName = _data["userName"];
+            this.password = _data["password"];
+        }
     }
-  }
 
-  static fromJS(data: any): RegisterRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new RegisterRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): RegisterRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegisterRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["email"] = this.email;
-    data["userName"] = this.userName;
-    data["password"] = this.password;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["userName"] = this.userName;
+        data["password"] = this.password;
+        return data;
+    }
 }
 
 export interface IRegisterRequest {
-  email?: string;
-  userName?: string;
-  password?: string;
+    email?: string;
+    userName?: string;
+    password?: string;
+}
+
+export class TokenResponse implements ITokenResponse {
+    id?: string;
+    userName?: string | undefined;
+    accessToken?: string | undefined;
+    refreshToken?: string | undefined;
+
+    constructor(data?: ITokenResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.accessToken = _data["accessToken"];
+            this.refreshToken = _data["refreshToken"];
+        }
+    }
+
+    static fromJS(data: any): TokenResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new TokenResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["accessToken"] = this.accessToken;
+        data["refreshToken"] = this.refreshToken;
+        return data;
+    }
+}
+
+export interface ITokenResponse {
+    id?: string;
+    userName?: string | undefined;
+    accessToken?: string | undefined;
+    refreshToken?: string | undefined;
 }
 
 export class LoginRequest implements ILoginRequest {
-  email?: string;
-  password?: string;
+    email?: string;
+    password?: string;
 
-  constructor(data?: ILoginRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: ILoginRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.email = _data["email"];
-      this.password = _data["password"];
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.password = _data["password"];
+        }
     }
-  }
 
-  static fromJS(data: any): LoginRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new LoginRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): LoginRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["email"] = this.email;
-    data["password"] = this.password;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["password"] = this.password;
+        return data;
+    }
 }
 
 export interface ILoginRequest {
-  email?: string;
-  password?: string;
+    email?: string;
+    password?: string;
 }
 
 export class RefreshRequest implements IRefreshRequest {
-  refreshToken?: string;
+    refreshToken?: string;
 
-  constructor(data?: IRefreshRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: IRefreshRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.refreshToken = _data["refreshToken"];
+    init(_data?: any) {
+        if (_data) {
+            this.refreshToken = _data["refreshToken"];
+        }
     }
-  }
 
-  static fromJS(data: any): RefreshRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new RefreshRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): RefreshRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new RefreshRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["refreshToken"] = this.refreshToken;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["refreshToken"] = this.refreshToken;
+        return data;
+    }
 }
 
 export interface IRefreshRequest {
-  refreshToken?: string;
+    refreshToken?: string;
 }
 
 export class ResendConfirmationRequest implements IResendConfirmationRequest {
-  email?: string;
+    email?: string;
 
-  constructor(data?: IResendConfirmationRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: IResendConfirmationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.email = _data["email"];
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+        }
     }
-  }
 
-  static fromJS(data: any): ResendConfirmationRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new ResendConfirmationRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): ResendConfirmationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResendConfirmationRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["email"] = this.email;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        return data;
+    }
 }
 
 export interface IResendConfirmationRequest {
-  email?: string;
+    email?: string;
 }
 
 export class ForgotPasswordRequest implements IForgotPasswordRequest {
-  email?: string;
+    email?: string;
 
-  constructor(data?: IForgotPasswordRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: IForgotPasswordRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.email = _data["email"];
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+        }
     }
-  }
 
-  static fromJS(data: any): ForgotPasswordRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new ForgotPasswordRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): ForgotPasswordRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ForgotPasswordRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["email"] = this.email;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        return data;
+    }
 }
 
 export interface IForgotPasswordRequest {
-  email?: string;
+    email?: string;
 }
 
 export class ResetPasswordRequest implements IResetPasswordRequest {
-  email?: string;
-  token?: string;
-  newPassword?: string;
+    email?: string;
+    token?: string;
+    newPassword?: string;
 
-  constructor(data?: IResetPasswordRequest) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
+    constructor(data?: IResetPasswordRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
-  }
 
-  init(_data?: any) {
-    if (_data) {
-      this.email = _data["email"];
-      this.token = _data["token"];
-      this.newPassword = _data["newPassword"];
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.token = _data["token"];
+            this.newPassword = _data["newPassword"];
+        }
     }
-  }
 
-  static fromJS(data: any): ResetPasswordRequest {
-    data = typeof data === "object" ? data : {};
-    let result = new ResetPasswordRequest();
-    result.init(data);
-    return result;
-  }
+    static fromJS(data: any): ResetPasswordRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResetPasswordRequest();
+        result.init(data);
+        return result;
+    }
 
-  toJSON(data?: any) {
-    data = typeof data === "object" ? data : {};
-    data["email"] = this.email;
-    data["token"] = this.token;
-    data["newPassword"] = this.newPassword;
-    return data;
-  }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["token"] = this.token;
+        data["newPassword"] = this.newPassword;
+        return data;
+    }
 }
 
 export interface IResetPasswordRequest {
-  email?: string;
-  token?: string;
-  newPassword?: string;
+    email?: string;
+    token?: string;
+    newPassword?: string;
 }
 
 export interface FileResponse {
-  data: Blob;
-  status: number;
-  fileName?: string;
-  headers?: { [name: string]: any };
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {
-  message: string;
-  status: number;
-  response: string;
-  headers: { [key: string]: any };
-  result: any;
+    message: string;
+    status: number;
+    response: string;
+    headers: { [key: string]: any; };
+    result: any;
 
-  constructor(
-    message: string,
-    status: number,
-    response: string,
-    headers: { [key: string]: any },
-    result: any
-  ) {
-    super();
+    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
+        super();
 
-    this.message = message;
-    this.status = status;
-    this.response = response;
-    this.headers = headers;
-    this.result = result;
-  }
+        this.message = message;
+        this.status = status;
+        this.response = response;
+        this.headers = headers;
+        this.result = result;
+    }
 
-  protected isApiException = true;
+    protected isApiException = true;
 
-  static isApiException(obj: any): obj is ApiException {
-    return obj.isApiException === true;
-  }
+    static isApiException(obj: any): obj is ApiException {
+        return obj.isApiException === true;
+    }
 }
 
-function throwException(
-  message: string,
-  status: number,
-  response: string,
-  headers: { [key: string]: any },
-  result?: any
-): any {
-  if (result !== null && result !== undefined) throw result;
-  else throw new ApiException(message, status, response, headers, null);
+function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
+    if (result !== null && result !== undefined)
+        throw result;
+    else
+        throw new ApiException(message, status, response, headers, null);
 }
