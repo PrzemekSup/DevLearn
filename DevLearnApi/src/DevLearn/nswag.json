@@ -32,7 +32,7 @@
         "generateCloneMethod": false,
         "importRequiredTypes": true
       },
-      "output": "../../../ui/client.ts"
+      "output": "../../../ui/src/api/client.ts"
     }
   }
 }
