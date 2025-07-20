@@ -6,7 +6,7 @@ import { QuickActions } from "./components/QuickActions";
 import { UserProgress } from "./components/UserProgress";
 import { RecentActivity } from "./components/RecentActivity";
 import { StudyStreakCard } from "./components/StudyStreakCard";
-import { RecentAchievements } from "./RecentAchievements";
+import { RecentAchievements } from "./components/RecentAchievements";
 
 const UserDashboard = () => {
   const { user } = useAuth();

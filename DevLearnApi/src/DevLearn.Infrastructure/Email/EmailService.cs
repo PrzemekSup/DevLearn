@@ -27,7 +27,7 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
         var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
         var urlToConfirm = $"{baseUrl}user/confirmEmail/{userId}/{token}";
         var html = "<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby potwierdzić adres email. " +
-            $"Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: '{urlToConfirm}'</div>";
+            $"Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: {urlToConfirm}</div>";
         return emailContext.SendHtml([email], "Potwierdź adres email - DevLearn", html);
     }
 
@@ -36,7 +36,7 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
         var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
         var urlToConfirm = $"{baseUrl}forgotpasswordform?u={userId}&k={forgotPasswordKey}";
         var html = $"<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby zrestartować swoje hasło. " +
-            $"<br />Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: '{urlToConfirm}'</div>";
+            $"<br />Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: {urlToConfirm}</div>";
         return emailContext.SendHtml([email], "Zresetuj hasło - DevLearn", html);
     }
 }
