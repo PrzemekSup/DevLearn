@@ -445,6 +445,40 @@ export class ApiClient {
         }
         return Promise.resolve<FileResponse>(null as any);
     }
+
+    test_Index(): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Test/islogged";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processTest_Index(_response);
+        });
+    }
+
+    protected processTest_Index(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
+    }
 }
 
 export class ValidationStateDto implements IValidationStateDto {
@@ -545,9 +579,9 @@ export interface IRegisterRequest {
 
 export class TokenResponse implements ITokenResponse {
     id?: string;
-    userName?: string | undefined;
-    accessToken?: string | undefined;
-    refreshToken?: string | undefined;
+    userName?: string;
+    accessToken?: string;
+    refreshToken?: string;
 
     constructor(data?: ITokenResponse) {
         if (data) {
@@ -586,9 +620,9 @@ export class TokenResponse implements ITokenResponse {
 
 export interface ITokenResponse {
     id?: string;
-    userName?: string | undefined;
-    accessToken?: string | undefined;
-    refreshToken?: string | undefined;
+    userName?: string;
+    accessToken?: string;
+    refreshToken?: string;
 }
 
 export class LoginRequest implements ILoginRequest {

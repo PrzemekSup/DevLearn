@@ -1,25 +1,20 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  Code2,
-  User,
-  LogOut,
-  Menu,
-  X,
-  Settings,
-} from "lucide-react";
+import { Code2, User, LogOut, Menu, X, Settings } from "lucide-react";
 import { MENU_LINKS, MenuLink } from "../common/Links";
+import { useApiClient } from "../contexts/ApiClientContext";
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { unauthorize } = useApiClient();
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    unauthorize();
     navigate("/");
     setIsProfileOpen(false);
   };
@@ -29,7 +24,10 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to={MENU_LINKS.HOME.url} className="flex items-center space-x-2 group">
+          <Link
+            to={MENU_LINKS.HOME.url}
+            className="flex items-center space-x-2 group"
+          >
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg group-hover:scale-110 transition-transform duration-200">
               <Code2 className="h-6 w-6 text-white" />
             </div>
@@ -40,8 +38,14 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            <MenuLinkComponent currentPathName={location.pathname} link={MENU_LINKS.HOME} />
-            <MenuLinkComponent currentPathName={location.pathname} link={MENU_LINKS.BLOG} />
+            <MenuLinkComponent
+              currentPathName={location.pathname}
+              link={MENU_LINKS.HOME}
+            />
+            <MenuLinkComponent
+              currentPathName={location.pathname}
+              link={MENU_LINKS.BLOG}
+            />
             {user && (
               <>
                 <MenuLinkComponent
@@ -231,7 +235,10 @@ type MenuLinkComponentProps = {
   link: MenuLink;
 };
 
-const MenuLinkComponent: React.FC<MenuLinkComponentProps> = ({ currentPathName, link }) => {
+const MenuLinkComponent: React.FC<MenuLinkComponentProps> = ({
+  currentPathName,
+  link,
+}) => {
   const isActive = currentPathName === link.url;
   return (
     <NavLink to={link.url} icon={link.icon} isActive={isActive}>
