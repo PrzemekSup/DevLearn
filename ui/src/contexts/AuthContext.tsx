@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { TokenResponse } from "../api/client";
 
 interface User {
@@ -6,16 +6,13 @@ interface User {
   name: string;
   avatar?: string;
   joinedAt: Date;
-  accessToken: string;
-  refreshToken: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  initialize: () => boolean;
   setLoggedUser: (tokenResponse: TokenResponse) => void;
-  register: (email: string, password: string, name: string) => Promise<boolean>;
-  logout: () => void;
-  isLoading: boolean;
+  removeLoggedUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,56 +25,35 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
 
-  useEffect(() => {
-    // Simulate checking for existing session
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  const initialize = (): boolean => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+      return true;
+    } else {
+      return false;
     }
-    setIsLoading(false);
-  }, []);
+  };
 
   const setLoggedUser = (tokenResponse: TokenResponse) => {
     const user: User = {
-      id: tokenResponse.userName || "",
+      id: tokenResponse.id || "",
       name: tokenResponse.userName || "",
-      accessToken: tokenResponse.accessToken || "",
-      refreshToken: tokenResponse.refreshToken || "",
       joinedAt: new Date(),
     };
     localStorage.setItem("user", JSON.stringify(user));
     setUser(user);
   };
 
-  const register = async (
-    email: string,
-    password: string,
-    name: string
-  ): Promise<boolean> => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const newUser: User = {
-      id: Date.now().toString(),
-      name,
-      joinedAt: new Date(),
-      accessToken: "",
-      refreshToken: "",
-    };
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    setIsLoading(false);
-    return true;
-  };
-
-  const logout = () => {
+  const removeLoggedUser = () => {
     setUser(null);
     localStorage.removeItem("user");
   };
@@ -86,10 +62,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     <AuthContext.Provider
       value={{
         user,
+        initialize,
         setLoggedUser,
-        register,
-        logout,
-        isLoading,
+        removeLoggedUser,
       }}
     >
       {children}

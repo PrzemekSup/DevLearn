@@ -49,7 +49,7 @@ const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     name: user?.name || '',
-    email: user?.email || '',
+    email: '',
     bio: 'Passionate developer learning new technologies every day.',
     location: 'San Francisco, CA',
     website: 'https://github.com/johndoe'
@@ -159,7 +159,7 @@ const ProfilePage: React.FC = () => {
   const handleCancelEdit = () => {
     setEditedProfile({
       name: user?.name || '',
-      email: user?.email || '',
+      email: '',
       bio: 'Passionate developer learning new technologies every day.',
       location: 'San Francisco, CA',
       website: 'https://github.com/johndoe'

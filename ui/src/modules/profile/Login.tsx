@@ -5,17 +5,20 @@ import { Mail, Lock, Loader } from "lucide-react";
 import { useLogin } from "../../api/hooks/UserApiHooks";
 import { TextInput } from "../../components/inputs/TextInput";
 import { Error } from "../../components/common/Error";
+import { useApiClient } from "../../contexts/ApiClientContext";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { setLoggedUser } = useAuth();
+  const { setApiAccessToken } = useApiClient();
   const navigate = useNavigate();
 
   const loginMutation = useLogin(
     (data) => {
       setLoggedUser(data);
+      setApiAccessToken(data.accessToken!, data.refreshToken!);
       navigate("/dashboard");
     },
     (error) => {

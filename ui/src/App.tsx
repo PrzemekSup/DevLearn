@@ -14,32 +14,35 @@ import ProfilePage from "./pages/ProfilePage";
 import UserDashboard from "./modules/dashboards/UserDashboard";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Login } from "./modules/profile/Login";
+import { ApiClientProvider } from "./contexts/ApiClientContext";
 
 const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ProgressProvider>
-          <Router>
-            <div className="min-h-screen bg-gray-50">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:id" element={<ArticlePage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/paths" element={<PathsPage />} />
-                <Route path="/course/:pathId" element={<CoursePage />} />
-                <Route path="/lesson/:lessonId" element={<LessonPage />} />
-                <Route path="/task/:taskId" element={<TaskPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-              </Routes>
-            </div>
-          </Router>
-        </ProgressProvider>
+        <ApiClientProvider>
+          <ProgressProvider>
+            <Router>
+              <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:id" element={<ArticlePage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/dashboard" element={<UserDashboard />} />
+                  <Route path="/paths" element={<PathsPage />} />
+                  <Route path="/course/:pathId" element={<CoursePage />} />
+                  <Route path="/lesson/:lessonId" element={<LessonPage />} />
+                  <Route path="/task/:taskId" element={<TaskPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                </Routes>
+              </div>
+            </Router>
+          </ProgressProvider>
+        </ApiClientProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
