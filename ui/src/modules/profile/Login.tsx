@@ -102,7 +102,7 @@ const RememberMe = () => {
         type="checkbox"
         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
       />
-      <span className="ml-2 text-sm text-gray-600">Remember me</span>
+      <span className="ml-2 text-sm text-gray-600">Zapamiętaj mnie</span>
     </label>
   );
 };
@@ -113,7 +113,7 @@ const ForgotPasswordLink = () => {
       to="/forgot-password"
       className="text-sm text-blue-600 hover:text-blue-700"
     >
-      Forgot password?
+      Zapomniałeś hasła?
     </Link>
   );
 };

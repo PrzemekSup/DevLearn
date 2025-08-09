@@ -12,7 +12,6 @@ import {
   Tag,
   Copy,
   Check,
-  ExternalLink,
 } from "lucide-react";
 
 interface Comment {
@@ -383,7 +382,7 @@ Start incorporating TypeScript into your projects <em>gradually</em>, and you'll
         // External links: <a href="url" target="_blank">text</a>
         .replace(
           /<a href="([^"]*)"([^>]*)>(.*?)<\/a>/g,
-          (match, href, attrs, text) => {
+          (_, href, attrs, text) => {
             const isExternal = href.startsWith("http") || href.startsWith("//");
             const targetAttr = attrs.includes("target=")
               ? attrs

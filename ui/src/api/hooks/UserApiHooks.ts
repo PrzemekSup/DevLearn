@@ -3,7 +3,12 @@ import {
   useQueryClient,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { TokenResponse, LoginRequest, ValidationStateDto } from "../client";
+import {
+  TokenResponse,
+  LoginRequest,
+  ValidationStateDto,
+  RegisterRequest,
+} from "../client";
 import { useApiClient } from "../../contexts/ApiClientContext";
 
 // Custom hook for testing authentication
@@ -75,3 +80,38 @@ export const useLogout = (
     },
   });
 };
+
+export function useRegister(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<
+  ValidationStateDto,
+  Error,
+  { name: string; email: string; password: string }
+> {
+  const { apiClient } = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      name,
+      email,
+      password,
+    }: {
+      name: string;
+      email: string;
+      password: string;
+    }) =>
+      apiClient.auth_RegisterUser(
+        new RegisterRequest({ userName: name, email, password })
+      ),
+    onSuccess: (data: ValidationStateDto) => {
+      queryClient.clear();
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      queryClient.clear();
+      onError(error.message);
+    },
+  });
+}

@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import BlogPage from "./pages/BlogPage";
 import ArticlePage from "./pages/ArticlePage";
-import RegisterPage from "./pages/RegisterPage";
 import PathsPage from "./pages/PathsPage";
 import CoursePage from "./pages/CoursePage";
 import LessonPage from "./pages/LessonPage";
@@ -15,6 +14,7 @@ import UserDashboard from "./modules/dashboards/UserDashboard";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Login } from "./modules/profile/Login";
 import { ApiClientProvider } from "./contexts/ApiClientContext";
+import { Register } from "./modules/profile/Register";
 
 const queryClient = new QueryClient();
 function App() {
@@ -31,7 +31,7 @@ function App() {
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/:id" element={<ArticlePage />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/paths" element={<PathsPage />} />
                   <Route path="/course/:pathId" element={<CoursePage />} />
