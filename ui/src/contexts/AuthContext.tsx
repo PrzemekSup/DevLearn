@@ -3,6 +3,7 @@ import { TokenResponse } from "../api/client";
 
 interface User {
   id: string;
+  email: string;
   name: string;
   avatar?: string;
   joinedAt: Date;
@@ -46,6 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const setLoggedUser = (tokenResponse: TokenResponse) => {
     const user: User = {
       id: tokenResponse.id || "",
+      email: tokenResponse.email || "",
       name: tokenResponse.userName || "",
       joinedAt: new Date(),
     };

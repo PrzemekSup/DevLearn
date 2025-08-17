@@ -1,5 +1,5 @@
 import { Eye, EyeOff, LucideIcon } from "lucide-react";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 interface TextInputProps {
   id: string;
@@ -10,6 +10,7 @@ interface TextInputProps {
   disabled: boolean;
   icon: LucideIcon;
   type?: "email" | "password" | "text";
+  message?: ReactNode;
 }
 
 export const TextInput = ({
@@ -21,6 +22,7 @@ export const TextInput = ({
   disabled,
   icon: Icon,
   type = "text",
+  message,
 }: TextInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType =
@@ -61,6 +63,7 @@ export const TextInput = ({
           </button>
         )}
       </div>
+      {message}
     </div>
   );
 };

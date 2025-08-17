@@ -29,7 +29,7 @@ public class TokenService(
 
         await authRepository.AddRefreshTokenAsync(refreshToken, user.Id, DateTime.UtcNow.Add(refreshTokenLifetime));
 
-        return new TokenResponse(user.Id, user.UserName ?? "", accessToken, refreshToken);
+        return new TokenResponse(user.Id, user.Email!, user.UserName ?? "", accessToken, refreshToken);
     }
 
     public async Task<TokenResponse> RefreshTokensAsync(RefreshRequest request)
@@ -47,7 +47,7 @@ public class TokenService(
 
         await authRepository.AddRefreshTokenAsync(newRefresh, user.Id, DateTime.UtcNow.Add(refreshTokenLifetime));
 
-        return new TokenResponse(user.Id, user.UserName ?? "", newToken, newRefresh);
+        return new TokenResponse(user.Id, user.Email!, user.UserName ?? "", newToken, newRefresh);
     }
 
     public async Task RevokeUserTokensAsync(string userId)

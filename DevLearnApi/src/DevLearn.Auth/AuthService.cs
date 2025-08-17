@@ -86,12 +86,13 @@ public class AuthService(UserManager<ApplicationUser> userManager,
             return new ValidationStateDto(false, string.Empty, ["Wystąpił problem z użytkownikiem. Spróbuj ponownie, możesz wysłać jeszcze raz e-mail potwierdzający!"]);
         }
 
-        var decodedToken = WebUtility.UrlDecode(token);
-        var result = await userManager.ConfirmEmailAsync(user, decodedToken);
+        // .NET decode token during parse to endpoint
+        // var decodedToken = WebUtility.UrlDecode(token);
+        var result = await userManager.ConfirmEmailAsync(user, token);
         if (!result.Succeeded)
         {
             // TODO: Logging
-            return new ValidationStateDto(false, string.Empty, ["Kod jest już nieważny."]);
+            return new ValidationStateDto(false, string.Empty, [.. result.Errors.Select(e => e.Description)]);
         }
 
         return new ValidationStateDto(true, "E-mail został potwierdzony", []);

@@ -3,7 +3,14 @@ import {
   useQueryClient,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { TokenResponse, LoginRequest, ValidationStateDto } from "../client";
+import {
+  TokenResponse,
+  LoginRequest,
+  ValidationStateDto,
+  RegisterRequest,
+  ConfirmEmailRequest,
+  ResendConfirmationRequest,
+} from "../client";
 import { useApiClient } from "../../contexts/ApiClientContext";
 
 // Custom hook for testing authentication
@@ -75,3 +82,80 @@ export const useLogout = (
     },
   });
 };
+
+export function useRegister(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<
+  ValidationStateDto,
+  Error,
+  { name: string; email: string; password: string }
+> {
+  const { apiClient } = useApiClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      name,
+      email,
+      password,
+    }: {
+      name: string;
+      email: string;
+      password: string;
+    }) =>
+      apiClient.auth_RegisterUser(
+        new RegisterRequest({ userName: name, email, password })
+      ),
+    onSuccess: (data: ValidationStateDto) => {
+      queryClient.clear();
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      queryClient.clear();
+      onError(error.message);
+    },
+  });
+}
+
+export function useConfirmEmail(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<
+  ValidationStateDto,
+  Error,
+  { userId: string; token: string }
+> {
+  const { apiClient } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({ userId, token }: { userId: string; token: string }) =>
+      apiClient.auth_ConfirmEmail(new ConfirmEmailRequest({ userId, token })),
+    onSuccess: (data: ValidationStateDto) => {
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      onError(error.message);
+    },
+  });
+}
+
+export function useResendLink(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<ValidationStateDto, Error, { email: string }> {
+  const { apiClient } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({ email }: { email: string }) =>
+      apiClient.auth_ResendConfirmationEmail(
+        new ResendConfirmationRequest({ email })
+      ),
+    onSuccess: (data: ValidationStateDto) => {
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      onError(error.message);
+    },
+  });
+}

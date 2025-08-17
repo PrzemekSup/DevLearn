@@ -106,7 +106,7 @@ export function createApiClientWithErrorHandling(
           );
 
           if (result instanceof DevErrorMessage) {
-            alert(result.message);
+            throw new Error(result.message);
           }
           return result;
         };
