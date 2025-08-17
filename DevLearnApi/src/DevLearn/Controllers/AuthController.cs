@@ -43,10 +43,10 @@ public class AuthController(IAuthService authService) : ControllerBase
         return new ValidationStateDto(true, string.Empty, []);
     }
 
-    [HttpGet("confirm-email")]
-    public async Task<ValidationStateDto> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+    [HttpPost("confirm-email")]
+    public async Task<ValidationStateDto> ConfirmEmail([FromBody] ConfirmEmailRequest request)
     {
-        return await authService.ConfirmEmailAsync(userId, token);
+        return await authService.ConfirmEmailAsync(request.UserId, request.Token);
     }
 
     [HttpPost("resend-confirmation")]

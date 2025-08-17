@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Login } from "./modules/profile/Login";
 import { ApiClientProvider } from "./contexts/ApiClientContext";
 import { Register } from "./modules/profile/Register";
+import { ConfirmEmail } from "./modules/profile/ConfirmEmail";
 
 const queryClient = new QueryClient();
 function App() {
@@ -38,6 +39,10 @@ function App() {
                   <Route path="/lesson/:lessonId" element={<LessonPage />} />
                   <Route path="/task/:taskId" element={<TaskPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route
+                    path="/confirmEmail/:userId/:token"
+                    element={<ConfirmEmail />}
+                  />
                 </Routes>
               </div>
             </Router>

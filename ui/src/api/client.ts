@@ -203,21 +203,17 @@ export class ApiClient {
         return Promise.resolve<ValidationStateDto>(null as any);
     }
 
-    auth_ConfirmEmail(userId?: string | undefined, token?: string | undefined): Promise<ValidationStateDto> {
-        let url_ = this.baseUrl + "/api/Auth/confirm-email?";
-        if (userId === null)
-            throw new Error("The parameter 'userId' cannot be null.");
-        else if (userId !== undefined)
-            url_ += "userId=" + encodeURIComponent("" + userId) + "&";
-        if (token === null)
-            throw new Error("The parameter 'token' cannot be null.");
-        else if (token !== undefined)
-            url_ += "token=" + encodeURIComponent("" + token) + "&";
+    auth_ConfirmEmail(request: ConfirmEmailRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Auth/confirm-email";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(request);
+
         let options_: RequestInit = {
-            method: "GET",
+            body: content_,
+            method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
@@ -699,6 +695,46 @@ export class RefreshRequest implements IRefreshRequest {
 
 export interface IRefreshRequest {
     refreshToken?: string;
+}
+
+export class ConfirmEmailRequest implements IConfirmEmailRequest {
+    userId?: string;
+    token?: string;
+
+    constructor(data?: IConfirmEmailRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.token = _data["token"];
+        }
+    }
+
+    static fromJS(data: any): ConfirmEmailRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConfirmEmailRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["token"] = this.token;
+        return data;
+    }
+}
+
+export interface IConfirmEmailRequest {
+    userId?: string;
+    token?: string;
 }
 
 export class ResendConfirmationRequest implements IResendConfirmationRequest {

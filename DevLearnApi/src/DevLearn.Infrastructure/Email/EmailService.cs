@@ -22,11 +22,11 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
         return emailContext.SendHtml(to, "DevLearn wiadomość od odwiedzającego", $"{subjectHtml}{contentHtml}");
     }
 
-    public Task SendConfirmationEmailAsync(string email, string userId, string token)
+    public Task SendConfirmationEmailAsync(string userId, string email, string token)
     {
         var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
-        var urlToConfirm = $"{baseUrl}user/confirmEmail/{userId}/{token}";
-        var html = "<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby potwierdzić adres email. " +
+        var urlToConfirm = $"{baseUrl}confirmEmail/{userId}/{token}";
+        var html = $"<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby potwierdzić adres email. " +
             $"Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: {urlToConfirm}</div>";
         return emailContext.SendHtml([email], "Potwierdź adres email - DevLearn", html);
     }
