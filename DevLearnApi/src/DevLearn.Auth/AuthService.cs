@@ -144,10 +144,10 @@ public class AuthService(UserManager<ApplicationUser> userManager,
 
     public async Task<ValidationStateDto> ResetPasswordAsync(ResetPasswordRequest request)
     {
-        var user = await userManager.FindByEmailAsync(request.Email);
+        var user = await userManager.FindByIdAsync(request.UserId);
         if (user == null)
         {
-            return new ValidationStateDto(false, "", [$"Wystąpił problem z użytkownikiem '{request.Email}' podczas próby zmiany hasła."]);
+            return new ValidationStateDto(false, "", [$"Wystąpił problem z użytkownikiem '{request.UserId}' podczas próby zmiany hasła."]);
         }
 
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
