@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useProgress } from '../contexts/ProgressContext';
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useProgress } from "../contexts/ProgressContext";
 import {
   User,
   Mail,
@@ -18,8 +18,8 @@ import {
   BarChart3,
   Clock,
   Star,
-  CheckCircle2
-} from 'lucide-react';
+  CheckCircle2,
+} from "lucide-react";
 
 interface Achievement {
   id: string;
@@ -48,107 +48,113 @@ const ProfilePage: React.FC = () => {
   const { progress } = useProgress();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
-    name: user?.name || '',
-    email: '',
-    bio: 'Passionate developer learning new technologies every day.',
-    location: 'San Francisco, CA',
-    website: 'https://github.com/johndoe'
+    name: user?.name || "",
+    email: user?.email || "",
+    bio: "Passionate developer learning new technologies every day.",
+    location: "San Francisco, CA",
+    website: "https://github.com/johndoe",
   });
 
   // Calculate learning statistics
   const learningStats: LearningStats = {
     totalLessons: 120,
-    completedLessons: progress.reduce((sum, p) => sum + p.completedLessons.length, 0),
+    completedLessons: progress.reduce(
+      (sum, p) => sum + p.completedLessons.length,
+      0
+    ),
     totalTasks: 45,
-    completedTasks: progress.reduce((sum, p) => sum + p.completedTasks.length, 0),
+    completedTasks: progress.reduce(
+      (sum, p) => sum + p.completedTasks.length,
+      0
+    ),
     totalXP: progress.reduce((sum, p) => sum + p.score, 0),
     currentStreak: 7,
     longestStreak: 15,
-    averageScore: 85
+    averageScore: 85,
   };
 
   const achievements: Achievement[] = [
     {
-      id: '1',
-      title: 'First Steps',
-      description: 'Completed your first lesson',
+      id: "1",
+      title: "First Steps",
+      description: "Completed your first lesson",
       icon: BookOpen,
-      color: 'from-blue-500 to-blue-600',
-      unlockedAt: new Date('2024-01-10')
+      color: "from-blue-500 to-blue-600",
+      unlockedAt: new Date("2024-01-10"),
     },
     {
-      id: '2',
-      title: 'Code Warrior',
-      description: 'Solved 10 coding challenges',
+      id: "2",
+      title: "Code Warrior",
+      description: "Solved 10 coding challenges",
       icon: Code2,
-      color: 'from-green-500 to-green-600',
-      unlockedAt: new Date('2024-01-15')
+      color: "from-green-500 to-green-600",
+      unlockedAt: new Date("2024-01-15"),
     },
     {
-      id: '3',
-      title: 'Streak Master',
-      description: 'Maintained a 7-day learning streak',
+      id: "3",
+      title: "Streak Master",
+      description: "Maintained a 7-day learning streak",
       icon: Target,
-      color: 'from-orange-500 to-orange-600',
-      unlockedAt: new Date('2024-01-20')
+      color: "from-orange-500 to-orange-600",
+      unlockedAt: new Date("2024-01-20"),
     },
     {
-      id: '4',
-      title: 'React Expert',
-      description: 'Completed the React Fundamentals path',
+      id: "4",
+      title: "React Expert",
+      description: "Completed the React Fundamentals path",
       icon: Trophy,
-      color: 'from-purple-500 to-purple-600',
-      unlockedAt: new Date('2024-01-25')
+      color: "from-purple-500 to-purple-600",
+      unlockedAt: new Date("2024-01-25"),
     },
     {
-      id: '5',
-      title: 'TypeScript Pro',
-      description: 'Master TypeScript concepts',
+      id: "5",
+      title: "TypeScript Pro",
+      description: "Master TypeScript concepts",
       icon: Star,
-      color: 'from-yellow-500 to-yellow-600',
+      color: "from-yellow-500 to-yellow-600",
       progress: 75,
-      maxProgress: 100
+      maxProgress: 100,
     },
     {
-      id: '6',
-      title: 'Full Stack Developer',
-      description: 'Complete both frontend and backend paths',
+      id: "6",
+      title: "Full Stack Developer",
+      description: "Complete both frontend and backend paths",
       icon: Award,
-      color: 'from-red-500 to-red-600',
+      color: "from-red-500 to-red-600",
       progress: 40,
-      maxProgress: 100
-    }
+      maxProgress: 100,
+    },
   ];
 
   const recentActivity = [
     {
       id: 1,
-      type: 'lesson',
-      title: 'React Hooks Advanced Patterns',
+      type: "lesson",
+      title: "React Hooks Advanced Patterns",
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      points: 25
+      points: 25,
     },
     {
       id: 2,
-      type: 'task',
-      title: 'Build a Todo App with TypeScript',
+      type: "task",
+      title: "Build a Todo App with TypeScript",
       timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      points: 50
+      points: 50,
     },
     {
       id: 3,
-      type: 'achievement',
+      type: "achievement",
       title: 'Earned "Streak Master" achievement',
       timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      points: 100
+      points: 100,
     },
     {
       id: 4,
-      type: 'lesson',
-      title: 'Advanced TypeScript Types',
+      type: "lesson",
+      title: "Advanced TypeScript Types",
       timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      points: 30
-    }
+      points: 30,
+    },
   ];
 
   const handleSaveProfile = () => {
@@ -158,22 +164,22 @@ const ProfilePage: React.FC = () => {
 
   const handleCancelEdit = () => {
     setEditedProfile({
-      name: user?.name || '',
-      email: '',
-      bio: 'Passionate developer learning new technologies every day.',
-      location: 'San Francisco, CA',
-      website: 'https://github.com/johndoe'
+      name: user?.name || "",
+      email: user?.email || "",
+      bio: "Passionate developer learning new technologies every day.",
+      location: "San Francisco, CA",
+      website: "https://github.com/johndoe",
     });
     setIsEditing(false);
   };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'lesson':
+      case "lesson":
         return <BookOpen className="h-5 w-5 text-blue-600" />;
-      case 'task':
+      case "task":
         return <Code2 className="h-5 w-5 text-green-600" />;
-      case 'achievement':
+      case "achievement":
         return <Trophy className="h-5 w-5 text-yellow-600" />;
       default:
         return <Target className="h-5 w-5 text-gray-600" />;
@@ -186,9 +192,9 @@ const ProfilePage: React.FC = () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    return 'Just now';
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    return "Just now";
   };
 
   if (!user) {
@@ -196,8 +202,12 @@ const ProfilePage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <User className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please sign in</h2>
-          <p className="text-gray-600">You need to be logged in to view your profile.</p>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Please sign in
+          </h2>
+          <p className="text-gray-600">
+            You need to be logged in to view your profile.
+          </p>
         </div>
       </div>
     );
@@ -221,24 +231,22 @@ const ProfilePage: React.FC = () => {
                       <input
                         type="text"
                         value={editedProfile.name}
-                        onChange={(e) => setEditedProfile(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setEditedProfile((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         className="text-2xl font-bold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none"
                       />
                     ) : (
-                      <h1 className="text-2xl font-bold text-gray-900">{editedProfile.name}</h1>
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        {editedProfile.name}
+                      </h1>
                     )}
                     <div className="flex items-center text-gray-600 mt-1">
                       <Mail className="h-4 w-4 mr-2" />
-                      {isEditing ? (
-                        <input
-                          type="email"
-                          value={editedProfile.email}
-                          onChange={(e) => setEditedProfile(prev => ({ ...prev, email: e.target.value }))}
-                          className="bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
-                        />
-                      ) : (
-                        <span>{editedProfile.email}</span>
-                      )}
+                      <span>{editedProfile.email}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -276,22 +284,31 @@ const ProfilePage: React.FC = () => {
             {/* Profile Details */}
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">About</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  About
+                </h3>
                 {isEditing ? (
                   <textarea
                     value={editedProfile.bio}
-                    onChange={(e) => setEditedProfile(prev => ({ ...prev, bio: e.target.value }))}
+                    onChange={(e) =>
+                      setEditedProfile((prev) => ({
+                        ...prev,
+                        bio: e.target.value,
+                      }))
+                    }
                     rows={3}
                     className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   />
                 ) : (
                   <p className="text-gray-600">{editedProfile.bio}</p>
                 )}
-                
+
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center text-gray-600">
                     <Calendar className="h-4 w-4 mr-2" />
-                    <span>Joined {user.joinedAt.toLocaleDateString()}</span>
+                    <span>
+                      Joined {new Date(user.joinedAt).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <Settings className="h-4 w-4 mr-2" />
@@ -299,7 +316,12 @@ const ProfilePage: React.FC = () => {
                       <input
                         type="text"
                         value={editedProfile.location}
-                        onChange={(e) => setEditedProfile(prev => ({ ...prev, location: e.target.value }))}
+                        onChange={(e) =>
+                          setEditedProfile((prev) => ({
+                            ...prev,
+                            location: e.target.value,
+                          }))
+                        }
                         className="bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500"
                       />
                     ) : (
@@ -310,22 +332,32 @@ const ProfilePage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Quick Stats</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  Quick Stats
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{learningStats.totalXP}</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      {learningStats.totalXP}
+                    </div>
                     <div className="text-sm text-gray-600">Total XP</div>
                   </div>
                   <div className="text-center p-3 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{learningStats.currentStreak}</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {learningStats.currentStreak}
+                    </div>
                     <div className="text-sm text-gray-600">Day Streak</div>
                   </div>
                   <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{learningStats.completedLessons}</div>
+                    <div className="text-2xl font-bold text-purple-600">
+                      {learningStats.completedLessons}
+                    </div>
                     <div className="text-sm text-gray-600">Lessons</div>
                   </div>
                   <div className="text-center p-3 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">{learningStats.completedTasks}</div>
+                    <div className="text-2xl font-bold text-orange-600">
+                      {learningStats.completedTasks}
+                    </div>
                     <div className="text-sm text-gray-600">Tasks</div>
                   </div>
                 </div>
@@ -338,27 +370,40 @@ const ProfilePage: React.FC = () => {
           {/* Learning Statistics */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Learning Statistics</h2>
-              
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Learning Statistics
+              </h2>
+
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Lessons Progress</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      Lessons Progress
+                    </span>
                     <span className="text-sm text-gray-500">
-                      {learningStats.completedLessons}/{learningStats.totalLessons}
+                      {learningStats.completedLessons}/
+                      {learningStats.totalLessons}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(learningStats.completedLessons / learningStats.totalLessons) * 100}%` }}
+                      style={{
+                        width: `${
+                          (learningStats.completedLessons /
+                            learningStats.totalLessons) *
+                          100
+                        }%`,
+                      }}
                     ></div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Tasks Progress</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      Tasks Progress
+                    </span>
                     <span className="text-sm text-gray-500">
                       {learningStats.completedTasks}/{learningStats.totalTasks}
                     </span>
@@ -366,7 +411,13 @@ const ProfilePage: React.FC = () => {
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-gradient-to-r from-green-600 to-emerald-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(learningStats.completedTasks / learningStats.totalTasks) * 100}%` }}
+                      style={{
+                        width: `${
+                          (learningStats.completedTasks /
+                            learningStats.totalTasks) *
+                          100
+                        }%`,
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -402,19 +453,30 @@ const ProfilePage: React.FC = () => {
 
             {/* Recent Activity */}
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Recent Activity
+              </h2>
               <div className="space-y-4">
-                {recentActivity.map(activity => (
-                  <div key={activity.id} className="flex items-center p-4 bg-gray-50 rounded-lg">
+                {recentActivity.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center p-4 bg-gray-50 rounded-lg"
+                  >
                     <div className="bg-white p-2 rounded-lg mr-4">
                       {getActivityIcon(activity.type)}
                     </div>
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{activity.title}</div>
-                      <div className="text-sm text-gray-600">{getTimeAgo(activity.timestamp)}</div>
+                      <div className="font-medium text-gray-900">
+                        {activity.title}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {getTimeAgo(activity.timestamp)}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-medium text-green-600">+{activity.points} XP</div>
+                      <div className="text-sm font-medium text-green-600">
+                        +{activity.points} XP
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -425,10 +487,15 @@ const ProfilePage: React.FC = () => {
           {/* Achievements */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Achievements</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">
+                Achievements
+              </h3>
               <div className="space-y-4">
-                {achievements.map(achievement => (
-                  <AchievementCard key={achievement.id} achievement={achievement} />
+                {achievements.map((achievement) => (
+                  <AchievementCard
+                    key={achievement.id}
+                    achievement={achievement}
+                  />
                 ))}
               </div>
             </div>
@@ -446,7 +513,12 @@ interface StatCardProps {
   color: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ icon: Icon, title, value, color }) => (
+const StatCard: React.FC<StatCardProps> = ({
+  icon: Icon,
+  title,
+  value,
+  color,
+}) => (
   <div className="text-center p-4 bg-gray-50 rounded-lg">
     <Icon className={`h-6 w-6 ${color} mx-auto mb-2`} />
     <div className="text-lg font-bold text-gray-900">{value}</div>
@@ -461,32 +533,43 @@ interface AchievementCardProps {
 const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
   const Icon = achievement.icon;
   const isUnlocked = !!achievement.unlockedAt;
-  const hasProgress = achievement.progress !== undefined && achievement.maxProgress !== undefined;
+  const hasProgress =
+    achievement.progress !== undefined && achievement.maxProgress !== undefined;
 
   return (
-    <div className={`p-4 rounded-lg border ${
-      isUnlocked 
-        ? 'border-yellow-200 bg-yellow-50' 
-        : 'border-gray-200 bg-gray-50'
-    }`}>
+    <div
+      className={`p-4 rounded-lg border ${
+        isUnlocked
+          ? "border-yellow-200 bg-yellow-50"
+          : "border-gray-200 bg-gray-50"
+      }`}
+    >
       <div className="flex items-start">
-        <div className={`bg-gradient-to-r ${achievement.color} p-2 rounded-lg mr-3 ${
-          !isUnlocked && !hasProgress ? 'opacity-50' : ''
-        }`}>
+        <div
+          className={`bg-gradient-to-r ${
+            achievement.color
+          } p-2 rounded-lg mr-3 ${
+            !isUnlocked && !hasProgress ? "opacity-50" : ""
+          }`}
+        >
           <Icon className="h-5 w-5 text-white" />
         </div>
         <div className="flex-1">
-          <div className={`font-semibold ${
-            isUnlocked ? 'text-yellow-900' : 'text-gray-700'
-          }`}>
+          <div
+            className={`font-semibold ${
+              isUnlocked ? "text-yellow-900" : "text-gray-700"
+            }`}
+          >
             {achievement.title}
           </div>
-          <div className={`text-sm ${
-            isUnlocked ? 'text-yellow-700' : 'text-gray-500'
-          }`}>
+          <div
+            className={`text-sm ${
+              isUnlocked ? "text-yellow-700" : "text-gray-500"
+            }`}
+          >
             {achievement.description}
           </div>
-          
+
           {hasProgress && (
             <div className="mt-2">
               <div className="flex justify-between items-center mb-1">
@@ -498,16 +581,22 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
               <div className="w-full bg-gray-200 rounded-full h-1">
                 <div
                   className={`bg-gradient-to-r ${achievement.color} h-1 rounded-full transition-all duration-300`}
-                  style={{ width: `${(achievement.progress! / achievement.maxProgress!) * 100}%` }}
+                  style={{
+                    width: `${
+                      (achievement.progress! / achievement.maxProgress!) * 100
+                    }%`,
+                  }}
                 ></div>
               </div>
             </div>
           )}
-          
+
           {isUnlocked && achievement.unlockedAt && (
             <div className="flex items-center mt-2 text-xs text-yellow-600">
               <CheckCircle2 className="h-3 w-3 mr-1" />
-              <span>Unlocked {achievement.unlockedAt.toLocaleDateString()}</span>
+              <span>
+                Unlocked {achievement.unlockedAt.toLocaleDateString()}
+              </span>
             </div>
           )}
         </div>

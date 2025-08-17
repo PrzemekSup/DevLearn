@@ -26,12 +26,13 @@ export const ConfirmEmail = () => {
       if (data.success) {
         setStatus("success");
         setMessage(
-          data.successMessage || "E-mail został potwierdzony. Dziękujemy!"
+          data.successMessage || "Konto zostało potwierdzone. Dziękujemy!"
         );
       } else {
         setStatus("error");
         setMessage(
-          data.errors?.join(", ") || "Potwierdzenie adresu nie powiodło się."
+          data.errors?.join(", ") ||
+            "Potwierdzenie adresu e-mail nie powiodło się."
         );
       }
       setIsLoading(false);
@@ -89,12 +90,12 @@ export const ConfirmEmail = () => {
                 ? "Potwierdzanie konta..."
                 : status === "success"
                 ? "Wszystko się udało!"
-                : "Sprawdzenie nie udało się"}
+                : "Sprawdzenie nie udało się."}
             </h2>
 
             <p className="text-gray-600">
               {status === "loading"
-                ? "Weryfikujemy twoje dane, prosimy o chwilę cierpliwości"
+                ? "Weryfikujemy twoje dane, prosimy o chwilę cierpliwości."
                 : status === "success"
                 ? "Witaj na platformie DevLearn!"
                 : "Coś poszło nie tak, czy na pewno skopiowałeś dokładnie link z wiadomości?"}
@@ -110,39 +111,8 @@ export const ConfirmEmail = () => {
           )}
 
           {/* Success/Error Message */}
-          {!isLoading && (
-            <div
-              className={`rounded-lg p-6 mb-6 ${
-                status === "success"
-                  ? "bg-green-50 border border-green-200"
-                  : "bg-red-50 border border-red-200"
-              }`}
-            >
-              <div className="flex items-start">
-                {status === "success" ? (
-                  <CheckCircle className="h-6 w-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                ) : (
-                  <XCircle className="h-6 w-6 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-                )}
-                <div>
-                  <p
-                    className={`font-medium ${
-                      status === "success" ? "text-green-800" : "text-red-800"
-                    }`}
-                  >
-                    {status === "success" ? "Success!" : "Error"}
-                  </p>
-                  <p
-                    className={`mt-1 text-sm ${
-                      status === "success" ? "text-green-700" : "text-red-700"
-                    }`}
-                  >
-                    {message}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          {!isLoading && status === "success" && <Success message={message} />}
+          {!isLoading && status === "error" && <Error message={message} />}
 
           {/* Action Buttons */}
           {!isLoading && (
@@ -209,7 +179,7 @@ const ResendEmail = () => {
   const [resendMessage, setResendMessage] = useState("");
   const [status, setStatus] = useState<"none" | "success" | "error">("none");
 
-  const resendLink = useResendLink(
+  const resendLinkMutation = useResendLink(
     (data) => {
       if (data.success) {
         setResendMessage(
@@ -219,7 +189,7 @@ const ResendEmail = () => {
         setStatus("success");
       } else {
         setResendMessage(
-          data.errors?.join(", ") || "Potwierdzenie adresu nie powiodło się."
+          data.errors?.join(", ") || "Potwierdzenie konta nie powiodło się."
         );
         setStatus("error");
       }
@@ -242,7 +212,7 @@ const ResendEmail = () => {
       return;
     }
 
-    resendLink.mutate({ email: resendEmail });
+    resendLinkMutation.mutate({ email: resendEmail });
   };
 
   return !showResendForm ? (

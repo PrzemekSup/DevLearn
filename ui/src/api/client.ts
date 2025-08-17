@@ -575,6 +575,7 @@ export interface IRegisterRequest {
 
 export class TokenResponse implements ITokenResponse {
     id?: string;
+    email?: string;
     userName?: string;
     accessToken?: string;
     refreshToken?: string;
@@ -591,6 +592,7 @@ export class TokenResponse implements ITokenResponse {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.email = _data["email"];
             this.userName = _data["userName"];
             this.accessToken = _data["accessToken"];
             this.refreshToken = _data["refreshToken"];
@@ -607,6 +609,7 @@ export class TokenResponse implements ITokenResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["email"] = this.email;
         data["userName"] = this.userName;
         data["accessToken"] = this.accessToken;
         data["refreshToken"] = this.refreshToken;
@@ -616,6 +619,7 @@ export class TokenResponse implements ITokenResponse {
 
 export interface ITokenResponse {
     id?: string;
+    email?: string;
     userName?: string;
     accessToken?: string;
     refreshToken?: string;
