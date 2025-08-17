@@ -10,6 +10,8 @@ import {
   RegisterRequest,
   ConfirmEmailRequest,
   ResendConfirmationRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from "../client";
 import { useApiClient } from "../../contexts/ApiClientContext";
 
@@ -150,6 +152,56 @@ export function useResendLink(
     mutationFn: ({ email }: { email: string }) =>
       apiClient.auth_ResendConfirmationEmail(
         new ResendConfirmationRequest({ email })
+      ),
+    onSuccess: (data: ValidationStateDto) => {
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      onError(error.message);
+    },
+  });
+}
+
+export function useForgotPassword(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<ValidationStateDto, Error, { email: string }> {
+  const { apiClient } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({ email }: { email: string }) =>
+      apiClient.auth_ForgotPassword(new ForgotPasswordRequest({ email })),
+    onSuccess: (data: ValidationStateDto) => {
+      onSuccess(data);
+    },
+    onError: (error: Error) => {
+      onError(error.message);
+    },
+  });
+}
+
+export function useResetPassword(
+  onSuccess: (data: ValidationStateDto) => void,
+  onError: (error: string) => void
+): UseMutationResult<
+  ValidationStateDto,
+  Error,
+  { userId: string; token: string; newPassword: string }
+> {
+  const { apiClient } = useApiClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      token,
+      newPassword,
+    }: {
+      userId: string;
+      token: string;
+      newPassword: string;
+    }) =>
+      apiClient.auth_ResetPassword(
+        new ResetPasswordRequest({ userId, token, newPassword })
       ),
     onSuccess: (data: ValidationStateDto) => {
       onSuccess(data);

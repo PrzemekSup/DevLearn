@@ -34,7 +34,7 @@ public class EmailService(EmailContext emailContext, IConfiguration configuratio
     public Task SendForgotPasswordLinkAsync(string userId, string email, string forgotPasswordKey)
     {
         var baseUrl = configuration.GetSafeConfigurationKey("BaseDevLearnUrl");
-        var urlToConfirm = $"{baseUrl}forgotpasswordform?u={userId}&k={forgotPasswordKey}";
+        var urlToConfirm = $"{baseUrl}forgot-password-form/{userId}/{forgotPasswordKey}";
         var html = $"<div>Kliknij w <a href=\"{urlToConfirm}\">link</a>, aby zrestartować swoje hasło. " +
             $"<br />Jeżeli link nie działa, przekopiuj adres url do nowej karty przeglądarki: {urlToConfirm}</div>";
         return emailContext.SendHtml([email], "Zresetuj hasło - DevLearn", html);

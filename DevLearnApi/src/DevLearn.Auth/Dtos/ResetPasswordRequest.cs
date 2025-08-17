@@ -1,3 +1,3 @@
 ﻿namespace DevLearn.Auth.Dtos;
 
-public record ResetPasswordRequest(string Email, string Token, string NewPassword);
+public record ResetPasswordRequest(string UserId, string Token, string NewPassword);

@@ -814,7 +814,7 @@ export interface IForgotPasswordRequest {
 }
 
 export class ResetPasswordRequest implements IResetPasswordRequest {
-    email?: string;
+    userId?: string;
     token?: string;
     newPassword?: string;
 
@@ -829,7 +829,7 @@ export class ResetPasswordRequest implements IResetPasswordRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.email = _data["email"];
+            this.userId = _data["userId"];
             this.token = _data["token"];
             this.newPassword = _data["newPassword"];
         }
@@ -844,7 +844,7 @@ export class ResetPasswordRequest implements IResetPasswordRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["email"] = this.email;
+        data["userId"] = this.userId;
         data["token"] = this.token;
         data["newPassword"] = this.newPassword;
         return data;
@@ -852,7 +852,7 @@ export class ResetPasswordRequest implements IResetPasswordRequest {
 }
 
 export interface IResetPasswordRequest {
-    email?: string;
+    userId?: string;
     token?: string;
     newPassword?: string;
 }

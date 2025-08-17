@@ -16,6 +16,8 @@ import { Login } from "./modules/profile/Login";
 import { ApiClientProvider } from "./contexts/ApiClientContext";
 import { Register } from "./modules/profile/Register";
 import { ConfirmEmail } from "./modules/profile/ConfirmEmail";
+import { ForgotPassword } from "./modules/profile/ForgotPassword";
+import { ForgotPasswordForm } from "./modules/profile/ForgotPasswordForm";
 
 const queryClient = new QueryClient();
 function App() {
@@ -31,18 +33,25 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/:id" element={<ArticlePage />} />
+
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/confirmEmail/:userId/:token"
+                    element={<ConfirmEmail />}
+                  />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route
+                    path="/forgot-password-form/:userId/:token"
+                    element={<ForgotPasswordForm />}
+                  />
+
                   <Route path="/dashboard" element={<UserDashboard />} />
                   <Route path="/paths" element={<PathsPage />} />
                   <Route path="/course/:pathId" element={<CoursePage />} />
                   <Route path="/lesson/:lessonId" element={<LessonPage />} />
                   <Route path="/task/:taskId" element={<TaskPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
-                  <Route
-                    path="/confirmEmail/:userId/:token"
-                    element={<ConfirmEmail />}
-                  />
                 </Routes>
               </div>
             </Router>
