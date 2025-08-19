@@ -4,6 +4,7 @@ using DevLearn.Auth.IRepository;
 using DevLearn.Auth.Token;
 using DevLearn.Helpers;
 using DevLearn.Infrastructure.Email;
+using DevLearn.Infrastructure.Modules.Blog.Entities;
 using DevLearn.Infrastructure.Modules.Users.Entities;
 using DevLearn.Infrastructure.Modules.Users.Repositories;
 using DevLearn.Middleware;
@@ -36,6 +37,12 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql(postgreConnectionString, npgsqlOptions =>
     {
         npgsqlOptions.MigrationsHistoryTable("__UsersMigrationsHistory", "dev");
+    }));
+
+builder.Services.AddDbContext<BlogDbContext>(options =>
+    options.UseNpgsql(postgreConnectionString, npgsqlOptions =>
+    {
+        npgsqlOptions.MigrationsHistoryTable("__BlogMigrationsHistory", "dev");
     }));
 
 // === Identity ===
