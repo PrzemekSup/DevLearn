@@ -14,6 +14,7 @@ public class BlogMappingProfile : Profile
 
         CreateMap<BlogContract.CreateArticleTextContent, ArticleContent>()
             .ForMember(a => a.Id, opts => opts.MapFrom(a => Guid.NewGuid()))
+            .ForMember(a => a.BlockType, opts => opts.MapFrom(a => ArticleContentType.Text))
             .ForMember(a => a.Content, opts => opts.MapFrom(a => a.Text));
     }
 }

@@ -1,12 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DevLearn.Contract.Blog.Dtos;
 
-namespace DevLearn.Contract.Blog.Dtos
-{
-    class ArticleDetailsDto
-    {
-    }
-}
+public record ArticleDetailsDto(Guid Id);
