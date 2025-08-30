@@ -7,5 +7,5 @@ public class ArticleContent
     public Article Article { get; set; } = default!;
     public int BlockOrder { get; set; }
     public ArticleContentType BlockType { get; set; }
-    public Dictionary<string, object> Content { get; set; } = [];
+    public string Content { get; set; } = default!;
 }

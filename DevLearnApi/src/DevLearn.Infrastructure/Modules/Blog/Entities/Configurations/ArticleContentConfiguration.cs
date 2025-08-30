@@ -12,6 +12,5 @@ internal class ArticleContentConfiguration : IEntityTypeConfiguration<ArticleCon
         builder.HasOne(x => x.Article)
          .WithMany(x => x.ArticleContents)
          .HasForeignKey(x => x.ArticleId);
-        builder.Property(b => b.Content).HasColumnType("jsonb");
     }
 }

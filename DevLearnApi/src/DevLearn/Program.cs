@@ -1,10 +1,15 @@
+using AutoMapper;
 using Azure.Identity;
 using DevLearn.Auth;
 using DevLearn.Auth.IRepository;
 using DevLearn.Auth.Token;
+using DevLearn.Contract.Blog.IRepositories;
 using DevLearn.Helpers;
+using DevLearn.Infrastructure.Dispatchers;
 using DevLearn.Infrastructure.Email;
+using DevLearn.Infrastructure.Modules.Blog;
 using DevLearn.Infrastructure.Modules.Blog.Entities;
+using DevLearn.Infrastructure.Modules.Blog.Repositories;
 using DevLearn.Infrastructure.Modules.Users.Entities;
 using DevLearn.Infrastructure.Modules.Users.Repositories;
 using DevLearn.Middleware;
@@ -12,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Text;
@@ -62,7 +68,20 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 ConfigureEmail.Configure(builder);
+
+// == Mapper ==
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new BlogMappingProfile());
+}, new NullLoggerFactory());
+
+var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
+// == EventHandler ==
+RegisterDispatchers.Register(builder.Services);
 
 // === JWT Authentication ===
 var jwtKey = builder.Configuration.GetSafeConfigurationKey("DevJwtKey");
