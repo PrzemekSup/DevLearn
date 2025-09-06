@@ -16,7 +16,6 @@ import {
   Save,
   X,
   BarChart3,
-  Clock,
   Star,
   CheckCircle2,
 } from "lucide-react";

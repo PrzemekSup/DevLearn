@@ -4,7 +4,6 @@ import { ProgressProvider } from "./contexts/ProgressContext";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import BlogPage from "./pages/BlogPage";
-import ArticlePage from "./pages/ArticlePage";
 import PathsPage from "./pages/PathsPage";
 import CoursePage from "./pages/CoursePage";
 import LessonPage from "./pages/LessonPage";
@@ -18,6 +17,7 @@ import { Register } from "./modules/profile/Register";
 import { ConfirmEmail } from "./modules/profile/ConfirmEmail";
 import { ForgotPassword } from "./modules/profile/ForgotPassword";
 import { ForgotPasswordForm } from "./modules/profile/ForgotPasswordForm";
+import { Article } from "./modules/blog/Article";
 
 const queryClient = new QueryClient();
 function App() {
@@ -32,7 +32,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/:id" element={<ArticlePage />} />
+                  <Route path="/blog/:id" element={<Article />} />
 
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
