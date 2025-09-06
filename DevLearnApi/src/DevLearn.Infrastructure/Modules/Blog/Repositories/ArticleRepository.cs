@@ -13,6 +13,8 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
     {
         var articles = await context.Articles
             .Include(x => x.Author)
+            .Include(x => x.Category)
+            .Include(x => x.Tags)
             .OrderByDescending(a => a.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -30,6 +32,8 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
         var articles = await context.Articles
             .Where(x => x.Tags.Any(t => tags.Contains(t.Name)))
             .Include(x => x.Author)
+            .Include(x => x.Category)
+            .Include(x => x.Tags)
             .OrderByDescending(a => a.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -44,6 +48,29 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
     }
 
     /// <inheritdoc/>
+    public async Task<ArticleDetailsDto?> Get(string slug)
+    {
+        var article = await context.Articles
+            .Include(x => x.Author)
+            .Include(x => x.ArticleContents)
+            .Include(x => x.Category)
+            .Include(x => x.Tags)
+            .FirstOrDefaultAsync(x => x.Slug == slug);
+
+        if (article == null)
+        {
+            return null;
+        }
+
+        var articleDto = MapArticle(article);
+        var contents = article.ArticleContents.OrderBy(x => x.BlockOrder)
+            .Select(x => new Contract.Blog.Dtos.ArticleContent(x.BlockOrder, x.Content))
+            .ToArray();
+
+        return new ArticleDetailsDto(articleDto, contents, article.Likes);
+    }
+
+    /// <inheritdoc/>
     public async Task<Guid> CreateAsync(CreateArticleRequest request)
     {
         var articleDb = mapper.Map<Article>(request);
@@ -55,11 +82,11 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
         return articleDb.Id;
     }
 
-    private ArticleDto MapArticle(Article article)
+    private static ArticleDto MapArticle(Article article)
     {
         return new ArticleDto(article.Id, article.Title, article.Slug,
             article.Description, article.CreatedAt, article.UpdatedAt,
             new ArticleAuthorDto(article.Author.DisplayName, article.Author.Description),
-            [.. article.Tags.Select(t => t.Name)]);
+            article.Category.Name, [.. article.Tags.Select(t => t.Name)], article.ReadTimeInMins, article.Views);
     }
 }

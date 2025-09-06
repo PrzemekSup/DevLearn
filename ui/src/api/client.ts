@@ -18,6 +18,124 @@ export class ApiClient {
         this.baseUrl = baseUrl ?? "";
     }
 
+    article_Get(tags?: string[] | undefined, page?: number | null | undefined, pageSize?: number | null | undefined): Promise<ArticleListResponse> {
+        let url_ = this.baseUrl + "/api/Article?";
+        if (tags === null)
+            throw new Error("The parameter 'tags' cannot be null.");
+        else if (tags !== undefined)
+            tags && tags.forEach(item => { url_ += "tags=" + encodeURIComponent("" + item) + "&"; });
+        if (page !== undefined && page !== null)
+            url_ += "page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize !== undefined && pageSize !== null)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_Get(_response);
+        });
+    }
+
+    protected processArticle_Get(response: Response): Promise<ArticleListResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ArticleListResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ArticleListResponse>(null as any);
+    }
+
+    article_Create(request: CreateArticleRequest): Promise<string> {
+        let url_ = this.baseUrl + "/api/Article";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_Create(_response);
+        });
+    }
+
+    protected processArticle_Create(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    article_Get2(slug: string): Promise<ArticleDetailsDto> {
+        let url_ = this.baseUrl + "/api/Article/{slug}";
+        if (slug === undefined || slug === null)
+            throw new Error("The parameter 'slug' must be defined.");
+        url_ = url_.replace("{slug}", encodeURIComponent("" + slug));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_Get2(_response);
+        });
+    }
+
+    protected processArticle_Get2(response: Response): Promise<ArticleDetailsDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ArticleDetailsDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ArticleDetailsDto>(null as any);
+    }
+
     admin_RevokeUserTokens(userId: string): Promise<ValidationStateDto> {
         let url_ = this.baseUrl + "/api/Admin/revoke/{userId}";
         if (userId === undefined || userId === null)
@@ -475,6 +593,344 @@ export class ApiClient {
         }
         return Promise.resolve<ValidationStateDto>(null as any);
     }
+}
+
+export class ArticleListResponse implements IArticleListResponse {
+    articles!: ArticleDto[];
+    articlesCount!: number;
+
+    constructor(data?: IArticleListResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.articles = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["articles"])) {
+                this.articles = [] as any;
+                for (let item of _data["articles"])
+                    this.articles!.push(ArticleDto.fromJS(item));
+            }
+            this.articlesCount = _data["articlesCount"];
+        }
+    }
+
+    static fromJS(data: any): ArticleListResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleListResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.articles)) {
+            data["articles"] = [];
+            for (let item of this.articles)
+                data["articles"].push(item ? item.toJSON() : <any>undefined);
+        }
+        data["articlesCount"] = this.articlesCount;
+        return data;
+    }
+}
+
+export interface IArticleListResponse {
+    articles: ArticleDto[];
+    articlesCount: number;
+}
+
+export class ArticleDto implements IArticleDto {
+    id!: string;
+    title!: string;
+    slug!: string;
+    description!: string;
+    createdAt!: Date;
+    updatedAt!: Date;
+    articleAuthor!: ArticleAuthorDto;
+    category!: string;
+    tags?: string[];
+    readTimeInMins?: number | undefined;
+    views!: number;
+
+    constructor(data?: IArticleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.articleAuthor = new ArticleAuthorDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.slug = _data["slug"];
+            this.description = _data["description"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : <any>undefined;
+            this.articleAuthor = _data["articleAuthor"] ? ArticleAuthorDto.fromJS(_data["articleAuthor"]) : new ArticleAuthorDto();
+            this.category = _data["category"];
+            if (Array.isArray(_data["tags"])) {
+                this.tags = [] as any;
+                for (let item of _data["tags"])
+                    this.tags!.push(item);
+            }
+            this.readTimeInMins = _data["readTimeInMins"];
+            this.views = _data["views"];
+        }
+    }
+
+    static fromJS(data: any): ArticleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["slug"] = this.slug;
+        data["description"] = this.description;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : <any>undefined;
+        data["articleAuthor"] = this.articleAuthor ? this.articleAuthor.toJSON() : <any>undefined;
+        data["category"] = this.category;
+        if (Array.isArray(this.tags)) {
+            data["tags"] = [];
+            for (let item of this.tags)
+                data["tags"].push(item);
+        }
+        data["readTimeInMins"] = this.readTimeInMins;
+        data["views"] = this.views;
+        return data;
+    }
+}
+
+export interface IArticleDto {
+    id: string;
+    title: string;
+    slug: string;
+    description: string;
+    createdAt: Date;
+    updatedAt: Date;
+    articleAuthor: ArticleAuthorDto;
+    category: string;
+    tags?: string[];
+    readTimeInMins?: number | undefined;
+    views: number;
+}
+
+export class ArticleAuthorDto implements IArticleAuthorDto {
+    displayName!: string;
+    description!: string;
+
+    constructor(data?: IArticleAuthorDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): ArticleAuthorDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleAuthorDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IArticleAuthorDto {
+    displayName: string;
+    description: string;
+}
+
+export class ArticleDetailsDto implements IArticleDetailsDto {
+    article!: ArticleDto;
+    contents!: ArticleContent[];
+    likes!: number;
+
+    constructor(data?: IArticleDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.article = new ArticleDto();
+            this.contents = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.article = _data["article"] ? ArticleDto.fromJS(_data["article"]) : new ArticleDto();
+            if (Array.isArray(_data["contents"])) {
+                this.contents = [] as any;
+                for (let item of _data["contents"])
+                    this.contents!.push(ArticleContent.fromJS(item));
+            }
+            this.likes = _data["likes"];
+        }
+    }
+
+    static fromJS(data: any): ArticleDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["article"] = this.article ? this.article.toJSON() : <any>undefined;
+        if (Array.isArray(this.contents)) {
+            data["contents"] = [];
+            for (let item of this.contents)
+                data["contents"].push(item ? item.toJSON() : <any>undefined);
+        }
+        data["likes"] = this.likes;
+        return data;
+    }
+}
+
+export interface IArticleDetailsDto {
+    article: ArticleDto;
+    contents: ArticleContent[];
+    likes: number;
+}
+
+export class ArticleContent implements IArticleContent {
+    blockOrder!: number;
+    content!: string;
+
+    constructor(data?: IArticleContent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.blockOrder = _data["blockOrder"];
+            this.content = _data["content"];
+        }
+    }
+
+    static fromJS(data: any): ArticleContent {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleContent();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["blockOrder"] = this.blockOrder;
+        data["content"] = this.content;
+        return data;
+    }
+}
+
+export interface IArticleContent {
+    blockOrder: number;
+    content: string;
+}
+
+export class CreateArticleRequest implements ICreateArticleRequest {
+    title?: string;
+    description?: string;
+    slug?: string;
+    authorId?: string;
+    isAccepted?: boolean;
+    contents?: ArticleContent[];
+
+    constructor(data?: ICreateArticleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.slug = _data["slug"];
+            this.authorId = _data["authorId"];
+            this.isAccepted = _data["isAccepted"];
+            if (Array.isArray(_data["contents"])) {
+                this.contents = [] as any;
+                for (let item of _data["contents"])
+                    this.contents!.push(ArticleContent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateArticleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateArticleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["slug"] = this.slug;
+        data["authorId"] = this.authorId;
+        data["isAccepted"] = this.isAccepted;
+        if (Array.isArray(this.contents)) {
+            data["contents"] = [];
+            for (let item of this.contents)
+                data["contents"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface ICreateArticleRequest {
+    title?: string;
+    description?: string;
+    slug?: string;
+    authorId?: string;
+    isAccepted?: boolean;
+    contents?: ArticleContent[];
 }
 
 export class ValidationStateDto implements IValidationStateDto {

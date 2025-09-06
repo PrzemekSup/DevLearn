@@ -20,9 +20,14 @@ public interface IArticleRepository
     Task<ArticleListResponse> Search(List<string> tags, int page = 1, int pageSize = 10);
 
     /// <summary>
+    /// Gets Article based on provided slug (link).
+    /// </summary>
+    /// <returns>Single Article or NULL.</returns>
+    Task<ArticleDetailsDto?> Get(string slug);
+
+    /// <summary>
     /// Creates Article based on provided type.
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+    /// <returns>GUID of the new article.</returns>
     Task<Guid> CreateAsync(CreateArticleRequest request);
 }

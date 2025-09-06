@@ -13,4 +13,9 @@ public class Article
     public bool IsAccepted { get; set; }
     public List<ArticleContent> ArticleContents { get; set; } = [];
     public List<Tag> Tags { get; set; } = [];
+    public int? ReadTimeInMins { get; set; }
+    public int Views { get; set; }
+    public int Likes { get; set; }
+    public Guid CategoryId { get; set; }
+    public Tag Category { get; set; } = default!;
 }

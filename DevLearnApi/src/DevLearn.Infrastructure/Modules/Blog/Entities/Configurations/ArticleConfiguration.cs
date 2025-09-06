@@ -16,5 +16,6 @@ internal class ArticleConfiguration : IEntityTypeConfiguration<Article>
          .WithMany(x => x.Articles)
          .HasForeignKey(x => x.AuthorId);
         builder.HasMany(x => x.Tags).WithMany(x => x.Articles).UsingEntity("articlestags");
+        builder.HasOne(x => x.Category).WithMany(x => x.MainArticles).HasForeignKey(x => x.CategoryId);
     }
 }

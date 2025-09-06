@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DevLearn.Infrastructure.BlogDb
+namespace DevLearn.Infrastructure.Migrations.BlogDb
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20250830144658_ContentChange")]
-    partial class ContentChange
+    [Migration("20250906071813_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,6 +35,9 @@ namespace DevLearn.Infrastructure.BlogDb
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -45,6 +48,12 @@ namespace DevLearn.Infrastructure.BlogDb
 
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ReadTimeInMins")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -59,9 +68,14 @@ namespace DevLearn.Infrastructure.BlogDb
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Views")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("articles", "dev");
                 });
@@ -76,9 +90,6 @@ namespace DevLearn.Infrastructure.BlogDb
                         .HasColumnType("uuid");
 
                     b.Property<int>("BlockOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("BlockType")
                         .HasColumnType("integer");
 
                     b.Property<string>("Content")
@@ -156,7 +167,15 @@ namespace DevLearn.Infrastructure.BlogDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DevLearn.Infrastructure.Modules.Blog.Entities.Tag", "Category")
+                        .WithMany("MainArticles")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Author");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("DevLearn.Infrastructure.Modules.Blog.Entities.ArticleContent", b =>
@@ -193,6 +212,11 @@ namespace DevLearn.Infrastructure.BlogDb
             modelBuilder.Entity("DevLearn.Infrastructure.Modules.Blog.Entities.Author", b =>
                 {
                     b.Navigation("Articles");
+                });
+
+            modelBuilder.Entity("DevLearn.Infrastructure.Modules.Blog.Entities.Tag", b =>
+                {
+                    b.Navigation("MainArticles");
                 });
 #pragma warning restore 612, 618
         }

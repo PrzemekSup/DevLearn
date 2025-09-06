@@ -1,3 +1,9 @@
-﻿namespace DevLearn.Contract.Blog.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record ArticleListResponse(IReadOnlyList<ArticleDto> Articles, int ArticlesCount);
+namespace DevLearn.Contract.Blog.Dtos;
+
+public class ArticleListResponse(IReadOnlyList<ArticleDto> articles, int articlesCount)
+{
+    [Required] public IReadOnlyList<ArticleDto> Articles { get; set; } = articles;
+    [Required] public int ArticlesCount { get; set; } = articlesCount;
+}

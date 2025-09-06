@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DevLearn.Infrastructure.Migrations.BlogDb
 {
     /// <inheritdoc />
-    public partial class BlogEntities : Migration
+    public partial class InitMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,7 +54,11 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AuthorId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsAccepted = table.Column<bool>(type: "boolean", nullable: false)
+                    IsAccepted = table.Column<bool>(type: "boolean", nullable: false),
+                    ReadTimeInMins = table.Column<int>(type: "integer", nullable: true),
+                    Views = table.Column<int>(type: "integer", nullable: false),
+                    Likes = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,6 +68,13 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                         column: x => x.AuthorId,
                         principalSchema: "dev",
                         principalTable: "authors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_articles_tags_CategoryId",
+                        column: x => x.CategoryId,
+                        principalSchema: "dev",
+                        principalTable: "tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -77,8 +87,7 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ArticleId = table.Column<Guid>(type: "uuid", nullable: false),
                     BlockOrder = table.Column<int>(type: "integer", nullable: false),
-                    BlockType = table.Column<int>(type: "integer", nullable: false),
-                    Content = table.Column<Dictionary<string, object>>(type: "jsonb", nullable: false)
+                    Content = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,6 +141,12 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_articles_CategoryId",
+                schema: "dev",
+                table: "articles",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_articlestags_TagsId",
                 schema: "dev",
                 table: "articlestags",
@@ -154,11 +169,11 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                 schema: "dev");
 
             migrationBuilder.DropTable(
-                name: "tags",
+                name: "authors",
                 schema: "dev");
 
             migrationBuilder.DropTable(
-                name: "authors",
+                name: "tags",
                 schema: "dev");
         }
     }

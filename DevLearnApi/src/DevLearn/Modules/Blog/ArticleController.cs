@@ -17,6 +17,20 @@ public class ArticleController(IQueryDispatcher queryDispatcher, ICommandDispatc
         return articles;
     }
 
+    [HttpGet("{slug}")]
+    public async Task<ArticleDetailsDto?> Get(string slug)
+    {
+        var query = new GetArticleQuery(slug);
+        var article = await queryDispatcher.DispatchAsync<GetArticleQuery, ArticleDetailsDto?>(query);
+        if (article == null)
+        {
+            this.Response.StatusCode = StatusCodes.Status404NotFound;
+            return null;
+        }
+
+        return article;
+    }
+
     [HttpPost]
     public async Task<Guid> Create([FromBody] CreateArticleRequest request)
     {

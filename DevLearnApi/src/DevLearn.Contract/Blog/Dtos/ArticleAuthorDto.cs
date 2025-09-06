@@ -1,3 +1,9 @@
-﻿namespace DevLearn.Contract.Blog.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record ArticleAuthorDto(string DisplayName, string Description);
+namespace DevLearn.Contract.Blog.Dtos;
+
+public class ArticleAuthorDto(string displayName, string description)
+{
+    [Required] public string DisplayName { get; set; } = displayName;
+    [Required] public string Description { get; set; } = description;
+}

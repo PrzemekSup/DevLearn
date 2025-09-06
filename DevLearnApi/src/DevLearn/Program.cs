@@ -132,6 +132,7 @@ builder.Services.AddOpenApiDocument(opt =>
 {
     opt.Title = "DevLearn API";
     opt.Version = "v1";
+    opt.DefaultResponseReferenceTypeNullHandling = NJsonSchema.Generation.ReferenceTypeNullHandling.NotNull;
 
     opt.AddSecurity("Bearer", new NSwag.OpenApiSecurityScheme()
     {

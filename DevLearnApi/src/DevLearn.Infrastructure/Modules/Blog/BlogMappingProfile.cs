@@ -10,11 +10,11 @@ public class BlogMappingProfile : Profile
     {
         CreateMap<BlogContract.CreateArticleRequest, Article>()
             .ForMember(a => a.Id, opts => opts.MapFrom(a => Guid.NewGuid()))
-            .ForMember(a => a.ArticleContents, opts => opts.MapFrom(a => a.TextContents));
+            .ForMember(a => a.Likes, opts => opts.MapFrom(a => 0))
+            .ForMember(a => a.Views, opts => opts.MapFrom(a => 0))
+            .ForMember(a => a.ArticleContents, opts => opts.MapFrom(a => a.Contents.ToList()));
 
-        CreateMap<BlogContract.CreateArticleTextContent, ArticleContent>()
-            .ForMember(a => a.Id, opts => opts.MapFrom(a => Guid.NewGuid()))
-            .ForMember(a => a.BlockType, opts => opts.MapFrom(a => ArticleContentType.Text))
-            .ForMember(a => a.Content, opts => opts.MapFrom(a => a.Text));
+        CreateMap<BlogContract.ArticleContent, ArticleContent>()
+            .ForMember(a => a.Id, opts => opts.MapFrom(a => Guid.NewGuid()));
     }
 }
