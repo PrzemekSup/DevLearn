@@ -9,6 +9,8 @@ public class BlogDbContext(DbContextOptions<BlogDbContext> options) : DbContext(
     public DbSet<Article> Articles => Set<Article>();
     public DbSet<ArticleContent> ArticleContents => Set<ArticleContent>();
     public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<Like> Likes => Set<Like>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -19,6 +21,8 @@ public class BlogDbContext(DbContextOptions<BlogDbContext> options) : DbContext(
         builder.ApplyConfiguration(new ArticleContentConfiguration());
         builder.ApplyConfiguration(new AuthorConfiguration());
         builder.ApplyConfiguration(new TagConfiguration());
-
+        builder.ApplyConfiguration(new CommentConfiguration());
+        builder.Entity<Like>().ToTable("likes");
+        builder.Entity<Like>().Property(x => x.UserId).IsRequired().HasMaxLength(40);
     }
 }

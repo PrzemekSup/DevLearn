@@ -1,57 +1,69 @@
 import React, { useState } from "react";
 import { User, MessageCircle, Heart } from "lucide-react";
 import { TextArea } from "../../components/inputs/TextArea";
+import {
+  useAddComment,
+  useGetComments,
+  useSetCommentLike,
+} from "../../api/hooks/BlogApiHooks";
+import { Loader } from "../../components/common/Loader";
+import { Error } from "../../components/common/Error";
+import { CommentResponseDto } from "../../api/client";
 
-interface Comment {
-  id: string;
-  author: string;
-  content: string;
-  timestamp: Date;
-  likes: number;
-  replies?: Comment[];
+interface ICommentsProps {
+  articleId: string;
 }
 
-export const Comments = () => {
+export const Comments = ({ articleId }: ICommentsProps) => {
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: "1",
-      author: "John Doe",
-      content:
-        "Great article! TypeScript has really improved my development workflow. The type safety is invaluable for large projects.",
-      timestamp: new Date("2024-01-16T10:30:00"),
-      likes: 5,
-    },
-    {
-      id: "2",
-      author: "Jane Smith",
-      content:
-        "I love how you explained the interface concept. Coming from JavaScript, this was exactly what I needed to understand.",
-      timestamp: new Date("2024-01-16T14:15:00"),
-      likes: 3,
-    },
-    {
-      id: "3",
-      author: "Alex Johnson",
-      content:
-        "Would love to see a follow-up article on advanced TypeScript patterns like conditional types and mapped types!",
-      timestamp: new Date("2024-01-17T09:20:00"),
-      likes: 8,
-    },
-  ]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCommentSubmit = (e: React.FormEvent) => {
+  const commentMutation = useAddComment(
+    (data) => {
+      if (data.success) {
+        setErrorMessage("");
+        setNewComment("");
+      } else {
+        setErrorMessage(data.errors?.join(". ") ?? "");
+      }
+      setIsLoading(false);
+    },
+    (error) => {
+      setErrorMessage(error);
+      setIsLoading(false);
+    }
+  );
+
+  const { data, error, isLoading: isDataLoading } = useGetComments(articleId);
+  if (isDataLoading) {
+    return <Loader />;
+  }
+
+  if (error || !data) {
+    return (
+      <Error
+        message={
+          error?.message || "Wystąpił problem z załadowaniem komentarzy."
+        }
+      />
+    );
+  }
+
+  const comments = data;
+
+  const handleCommentSubmit = (
+    e: React.FormEvent,
+    parentCommentId?: string
+  ) => {
     e.preventDefault();
     if (newComment.trim()) {
-      const comment: Comment = {
-        id: Date.now().toString(),
-        author: "You",
+      setIsLoading(true);
+      commentMutation.mutateAsync({
+        articleId,
         content: newComment,
-        timestamp: new Date(),
-        likes: 0,
-      };
-      setComments([...comments, comment]);
-      setNewComment("");
+        parentCommentId,
+      });
     }
   };
 
@@ -76,14 +88,19 @@ export const Comments = () => {
           rows={4}
         />
         <div className="flex justify-end mt-4">
-          <button
-            type="submit"
-            disabled={!newComment.trim()}
-            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Dodaj komentarz
-          </button>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <button
+              type="submit"
+              disabled={!newComment.trim()}
+              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Dodaj komentarz
+            </button>
+          )}
         </div>
+        {errorMessage && <Error message={errorMessage} />}
       </form>
 
       {/* Comments List */}
@@ -97,11 +114,33 @@ export const Comments = () => {
 };
 
 interface CommentCardProps {
-  comment: Comment;
+  comment: CommentResponseDto;
 }
 
 const CommentCard = ({ comment }: CommentCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(comment.likes.isLikedByCurrentUser);
+
+  const commentLikeMutation = useSetCommentLike(
+    (data) => {
+      if (!data.success) {
+        alert(data.errors?.join(". ") ?? "");
+        setIsLiked((liked) => !liked);
+      }
+    },
+    (error) => {
+      alert(error);
+      setIsLiked((liked) => !liked);
+    }
+  );
+
+  const handleLikedChanged = (isLiked: boolean) => {
+    console.log("ste to ", isLiked);
+    setIsLiked(isLiked);
+    commentLikeMutation.mutateAsync({ entityId: comment.id, isLiked });
+  };
+
+  const likesWithoutUser =
+    comment.likes.likes - (comment.likes.isLikedByCurrentUser ? 1 : 0);
 
   return (
     <div className="border-l-4 border-blue-100 pl-6 py-4 bg-gray-50 rounded-r-lg">
@@ -113,13 +152,13 @@ const CommentCard = ({ comment }: CommentCardProps) => {
           <div>
             <div className="font-semibold text-gray-900">{comment.author}</div>
             <div className="text-sm text-gray-500">
-              {comment.timestamp.toLocaleDateString()} o{" "}
-              {comment.timestamp.toLocaleTimeString()}
+              {comment.createdAt.toLocaleDateString()} o{" "}
+              {comment.createdAt.toLocaleTimeString()}
             </div>
           </div>
         </div>
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={() => handleLikedChanged(!isLiked)}
           className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm transition-colors ${
             isLiked
               ? "bg-red-50 text-red-600 border border-red-200"
@@ -127,7 +166,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
           }`}
         >
           <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
-          <span>{comment.likes + (isLiked ? 1 : 0)}</span>
+          <span>{likesWithoutUser + (isLiked ? 1 : 0)}</span>
         </button>
       </div>
       <p className="text-gray-700 leading-relaxed">{comment.content}</p>

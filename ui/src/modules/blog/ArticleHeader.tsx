@@ -1,17 +1,17 @@
-import { useState } from "react";
 import { Calendar, User, Heart, BookOpen, Clock, Tag } from "lucide-react";
-import { ArticleDto } from "../../api/client";
+import { ArticleDto, LikeDto } from "../../api/client";
 import { LinkGetBack } from "../../components/common/Links";
 import { ButtonShare } from "../../components/common/ButtonShare";
+import { useSetArticleLike } from "../../api/hooks/BlogApiHooks";
+import { useState } from "react";
 
 interface IArticleHeaderProps {
   article: ArticleDto;
-  likes: number;
+  likes: LikeDto;
 }
 
 export const ArticleHeader = ({ article, likes }: IArticleHeaderProps) => {
-  const [isLiked, setIsLiked] = useState(false);
-
+  const [isLiked, setIsLiked] = useState<boolean>(likes.isLikedByCurrentUser);
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -24,6 +24,26 @@ export const ArticleHeader = ({ article, likes }: IArticleHeaderProps) => {
       alert("Link skopiowany do schowka!");
     }
   };
+
+  const commentLikeMutation = useSetArticleLike(
+    (data) => {
+      if (!data.success) {
+        alert(data.errors?.join(". ") ?? "");
+        setIsLiked((liked) => !liked);
+      }
+    },
+    (error) => {
+      alert(error);
+      setIsLiked((liked) => !liked);
+    }
+  );
+
+  const handleIsLikedChange = (isLiked: boolean) => {
+    commentLikeMutation.mutateAsync({ entityId: article.id, isLiked });
+    setIsLiked(isLiked);
+  };
+
+  const likesWithoutUser = likes.likes - (likes.isLikedByCurrentUser ? 1 : 0);
 
   return (
     <div className="bg-white border-b border-gray-200">
@@ -72,7 +92,7 @@ export const ArticleHeader = ({ article, likes }: IArticleHeaderProps) => {
 
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => setIsLiked(!isLiked)}
+                onClick={() => handleIsLikedChange(!isLiked)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                   isLiked
                     ? "bg-red-50 text-red-600 border border-red-200"
@@ -80,7 +100,9 @@ export const ArticleHeader = ({ article, likes }: IArticleHeaderProps) => {
                 }`}
               >
                 <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
-                <span className="font-medium">{likes + (isLiked ? 1 : 0)}</span>
+                <span className="font-medium">
+                  {likesWithoutUser + (isLiked ? 1 : 0)}
+                </span>
               </button>
               <ButtonShare onClick={handleShare} />
             </div>

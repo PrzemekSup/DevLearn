@@ -4,6 +4,7 @@ using DevLearn.Auth;
 using DevLearn.Auth.IRepository;
 using DevLearn.Auth.Token;
 using DevLearn.Contract.Blog.IRepositories;
+using DevLearn.Contract.User.IRepository;
 using DevLearn.Helpers;
 using DevLearn.Infrastructure.Dispatchers;
 using DevLearn.Infrastructure.Email;
@@ -69,6 +70,10 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 ConfigureEmail.Configure(builder);
 
 // == Mapper ==

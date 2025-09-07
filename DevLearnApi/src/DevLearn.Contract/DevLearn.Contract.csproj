@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DevLearn.Helpers\DevLearn.Helpers.csproj" />
+  </ItemGroup>
+
 </Project>

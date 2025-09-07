@@ -4,5 +4,5 @@ using DevLearn.Helpers;
 
 namespace DevLearn.Contract.Blog;
 
-public record CreateArticleCommand(CreateArticleRequest Request)
+public record CreateCommentCommand(CreateCommentRequest Request, string Author)
     : ICommand<ValidationStateDto>;

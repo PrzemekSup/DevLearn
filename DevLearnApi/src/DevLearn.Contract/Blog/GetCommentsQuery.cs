@@ -3,5 +3,6 @@ using DevLearn.Contract.Blog.Dtos;
 
 namespace DevLearn.Contract.Blog;
 
-public record GetArticleQuery(string Slug, string? CurrentUserId)
-    : IQuery<ArticleDetailsDto?>;
+public record GetCommentsQuery(Guid ArticleId, string? CurrentUserId)
+    : IQuery<CommentResponseDto[]>;
+
