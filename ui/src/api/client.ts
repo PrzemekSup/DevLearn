@@ -60,7 +60,7 @@ export class ApiClient {
         return Promise.resolve<ArticleListResponse>(null as any);
     }
 
-    article_Create(request: CreateArticleRequest): Promise<string> {
+    article_Create(request: CreateArticleRequest): Promise<ValidationStateDto> {
         let url_ = this.baseUrl + "/api/Article";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -80,15 +80,14 @@ export class ApiClient {
         });
     }
 
-    protected processArticle_Create(response: Response): Promise<string> {
+    protected processArticle_Create(response: Response): Promise<ValidationStateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = ValidationStateDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -96,7 +95,7 @@ export class ApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(null as any);
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
 
     article_Get2(slug: string): Promise<ArticleDetailsDto> {
@@ -134,6 +133,168 @@ export class ApiClient {
             });
         }
         return Promise.resolve<ArticleDetailsDto>(null as any);
+    }
+
+    article_AddArticleLike(articleId: string, isLiked: boolean): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Article/like/{articleId}/{isLiked}";
+        if (articleId === undefined || articleId === null)
+            throw new Error("The parameter 'articleId' must be defined.");
+        url_ = url_.replace("{articleId}", encodeURIComponent("" + articleId));
+        if (isLiked === undefined || isLiked === null)
+            throw new Error("The parameter 'isLiked' must be defined.");
+        url_ = url_.replace("{isLiked}", encodeURIComponent("" + isLiked));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_AddArticleLike(_response);
+        });
+    }
+
+    protected processArticle_AddArticleLike(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
+    }
+
+    article_GetComments(articleId: string): Promise<CommentResponseDto[]> {
+        let url_ = this.baseUrl + "/api/Article/comments/{articleId}";
+        if (articleId === undefined || articleId === null)
+            throw new Error("The parameter 'articleId' must be defined.");
+        url_ = url_.replace("{articleId}", encodeURIComponent("" + articleId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_GetComments(_response);
+        });
+    }
+
+    protected processArticle_GetComments(response: Response): Promise<CommentResponseDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CommentResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CommentResponseDto[]>(null as any);
+    }
+
+    article_CreateComment(request: CreateCommentRequest): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Article/comment";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_CreateComment(_response);
+        });
+    }
+
+    protected processArticle_CreateComment(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
+    }
+
+    article_AddCommentLike(commentId: string, isLiked: boolean): Promise<ValidationStateDto> {
+        let url_ = this.baseUrl + "/api/Article/comment/like/{commentId}/{isLiked}";
+        if (commentId === undefined || commentId === null)
+            throw new Error("The parameter 'commentId' must be defined.");
+        url_ = url_.replace("{commentId}", encodeURIComponent("" + commentId));
+        if (isLiked === undefined || isLiked === null)
+            throw new Error("The parameter 'isLiked' must be defined.");
+        url_ = url_.replace("{isLiked}", encodeURIComponent("" + isLiked));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processArticle_AddCommentLike(_response);
+        });
+    }
+
+    protected processArticle_AddCommentLike(response: Response): Promise<ValidationStateDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationStateDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ValidationStateDto>(null as any);
     }
 
     admin_RevokeUserTokens(userId: string): Promise<ValidationStateDto> {
@@ -776,7 +937,7 @@ export interface IArticleAuthorDto {
 export class ArticleDetailsDto implements IArticleDetailsDto {
     article!: ArticleDto;
     contents!: ArticleContent[];
-    likes!: number;
+    likes!: LikeDto;
 
     constructor(data?: IArticleDetailsDto) {
         if (data) {
@@ -788,6 +949,7 @@ export class ArticleDetailsDto implements IArticleDetailsDto {
         if (!data) {
             this.article = new ArticleDto();
             this.contents = [];
+            this.likes = new LikeDto();
         }
     }
 
@@ -799,7 +961,7 @@ export class ArticleDetailsDto implements IArticleDetailsDto {
                 for (let item of _data["contents"])
                     this.contents!.push(ArticleContent.fromJS(item));
             }
-            this.likes = _data["likes"];
+            this.likes = _data["likes"] ? LikeDto.fromJS(_data["likes"]) : new LikeDto();
         }
     }
 
@@ -818,7 +980,7 @@ export class ArticleDetailsDto implements IArticleDetailsDto {
             for (let item of this.contents)
                 data["contents"].push(item ? item.toJSON() : <any>undefined);
         }
-        data["likes"] = this.likes;
+        data["likes"] = this.likes ? this.likes.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -826,7 +988,7 @@ export class ArticleDetailsDto implements IArticleDetailsDto {
 export interface IArticleDetailsDto {
     article: ArticleDto;
     contents: ArticleContent[];
-    likes: number;
+    likes: LikeDto;
 }
 
 export class ArticleContent implements IArticleContent {
@@ -869,15 +1031,11 @@ export interface IArticleContent {
     content: string;
 }
 
-export class CreateArticleRequest implements ICreateArticleRequest {
-    title?: string;
-    description?: string;
-    slug?: string;
-    authorId?: string;
-    isAccepted?: boolean;
-    contents?: ArticleContent[];
+export class LikeDto implements ILikeDto {
+    likes!: number;
+    isLikedByCurrentUser!: boolean;
 
-    constructor(data?: ICreateArticleRequest) {
+    constructor(data?: ILikeDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -888,49 +1046,29 @@ export class CreateArticleRequest implements ICreateArticleRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.slug = _data["slug"];
-            this.authorId = _data["authorId"];
-            this.isAccepted = _data["isAccepted"];
-            if (Array.isArray(_data["contents"])) {
-                this.contents = [] as any;
-                for (let item of _data["contents"])
-                    this.contents!.push(ArticleContent.fromJS(item));
-            }
+            this.likes = _data["likes"];
+            this.isLikedByCurrentUser = _data["isLikedByCurrentUser"];
         }
     }
 
-    static fromJS(data: any): CreateArticleRequest {
+    static fromJS(data: any): LikeDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateArticleRequest();
+        let result = new LikeDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["slug"] = this.slug;
-        data["authorId"] = this.authorId;
-        data["isAccepted"] = this.isAccepted;
-        if (Array.isArray(this.contents)) {
-            data["contents"] = [];
-            for (let item of this.contents)
-                data["contents"].push(item ? item.toJSON() : <any>undefined);
-        }
+        data["likes"] = this.likes;
+        data["isLikedByCurrentUser"] = this.isLikedByCurrentUser;
         return data;
     }
 }
 
-export interface ICreateArticleRequest {
-    title?: string;
-    description?: string;
-    slug?: string;
-    authorId?: string;
-    isAccepted?: boolean;
-    contents?: ArticleContent[];
+export interface ILikeDto {
+    likes: number;
+    isLikedByCurrentUser: boolean;
 }
 
 export class ValidationStateDto implements IValidationStateDto {
@@ -983,6 +1121,222 @@ export interface IValidationStateDto {
     success?: boolean;
     successMessage?: string;
     errors?: string[];
+}
+
+export class CreateArticleRequest implements ICreateArticleRequest {
+    title?: string;
+    description?: string;
+    slug?: string;
+    authorId?: string;
+    isAccepted?: boolean;
+    contents?: ArticleContent[];
+    readTimeInMins?: number | undefined;
+    categoryId?: string;
+
+    constructor(data?: ICreateArticleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.slug = _data["slug"];
+            this.authorId = _data["authorId"];
+            this.isAccepted = _data["isAccepted"];
+            if (Array.isArray(_data["contents"])) {
+                this.contents = [] as any;
+                for (let item of _data["contents"])
+                    this.contents!.push(ArticleContent.fromJS(item));
+            }
+            this.readTimeInMins = _data["readTimeInMins"];
+            this.categoryId = _data["categoryId"];
+        }
+    }
+
+    static fromJS(data: any): CreateArticleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateArticleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["slug"] = this.slug;
+        data["authorId"] = this.authorId;
+        data["isAccepted"] = this.isAccepted;
+        if (Array.isArray(this.contents)) {
+            data["contents"] = [];
+            for (let item of this.contents)
+                data["contents"].push(item ? item.toJSON() : <any>undefined);
+        }
+        data["readTimeInMins"] = this.readTimeInMins;
+        data["categoryId"] = this.categoryId;
+        return data;
+    }
+}
+
+export interface ICreateArticleRequest {
+    title?: string;
+    description?: string;
+    slug?: string;
+    authorId?: string;
+    isAccepted?: boolean;
+    contents?: ArticleContent[];
+    readTimeInMins?: number | undefined;
+    categoryId?: string;
+}
+
+export class CommentDto implements ICommentDto {
+    id!: string;
+    author!: string;
+    content!: string;
+    createdAt!: Date;
+    likes!: LikeDto;
+    parentCommentId?: string | undefined;
+
+    constructor(data?: ICommentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.likes = new LikeDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.author = _data["author"];
+            this.content = _data["content"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.likes = _data["likes"] ? LikeDto.fromJS(_data["likes"]) : new LikeDto();
+            this.parentCommentId = _data["parentCommentId"];
+        }
+    }
+
+    static fromJS(data: any): CommentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["author"] = this.author;
+        data["content"] = this.content;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["likes"] = this.likes ? this.likes.toJSON() : <any>undefined;
+        data["parentCommentId"] = this.parentCommentId;
+        return data;
+    }
+}
+
+export interface ICommentDto {
+    id: string;
+    author: string;
+    content: string;
+    createdAt: Date;
+    likes: LikeDto;
+    parentCommentId?: string | undefined;
+}
+
+export class CommentResponseDto extends CommentDto implements ICommentResponseDto {
+    childrens?: CommentResponseDto[];
+
+    constructor(data?: ICommentResponseDto) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["childrens"])) {
+                this.childrens = [] as any;
+                for (let item of _data["childrens"])
+                    this.childrens!.push(CommentResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CommentResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.childrens)) {
+            data["childrens"] = [];
+            for (let item of this.childrens)
+                data["childrens"].push(item ? item.toJSON() : <any>undefined);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICommentResponseDto extends ICommentDto {
+    childrens?: CommentResponseDto[];
+}
+
+export class CreateCommentRequest implements ICreateCommentRequest {
+    articleId?: string;
+    content?: string;
+    parentCommentId?: string | undefined;
+
+    constructor(data?: ICreateCommentRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.articleId = _data["articleId"];
+            this.content = _data["content"];
+            this.parentCommentId = _data["parentCommentId"];
+        }
+    }
+
+    static fromJS(data: any): CreateCommentRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateCommentRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["articleId"] = this.articleId;
+        data["content"] = this.content;
+        data["parentCommentId"] = this.parentCommentId;
+        return data;
+    }
+}
+
+export interface ICreateCommentRequest {
+    articleId?: string;
+    content?: string;
+    parentCommentId?: string | undefined;
 }
 
 export class RegisterRequest implements IRegisterRequest {

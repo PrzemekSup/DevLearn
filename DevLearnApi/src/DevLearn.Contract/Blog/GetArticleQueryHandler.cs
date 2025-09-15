@@ -9,6 +9,6 @@ public class GetArticleQueryHandler(IArticleRepository repository)
 {
     public Task<ArticleDetailsDto?> HandleAsync(GetArticleQuery query, CancellationToken cancellationToken = default)
     {
-        return repository.Get(query.Slug);
+        return repository.GetAsync(query.Slug, query.CurrentUserId);
     }
 }

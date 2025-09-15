@@ -13,22 +13,22 @@ public class GetArticlesQueryHandler(IArticleRepository repository)
         {
             if (query.Page.HasValue && query.PageSize.HasValue)
             {
-                return repository.Search(query.Tags, query.Page.Value, query.PageSize.Value);
+                return repository.SearchAsync(query.Tags, query.Page.Value, query.PageSize.Value);
             }
             else
             {
-                return repository.Search(query.Tags);
+                return repository.SearchAsync(query.Tags);
             }
         }
         else
         {
             if (query.Page.HasValue && query.PageSize.HasValue)
             {
-                return repository.Get(query.Page.Value, query.PageSize.Value);
+                return repository.GetAsync(query.Page.Value, query.PageSize.Value);
             }
             else
             {
-                return repository.Get();
+                return repository.GetAsync();
             }
         }
     }

@@ -17,11 +17,11 @@ public class ArticleDto(Guid id, string title, string slug, string description, 
     [Required] public int Views { get; init; } = views;
 }
 
-public class ArticleDetailsDto(ArticleDto article, ArticleContent[] contents, int likes)
+public class ArticleDetailsDto(ArticleDto article, ArticleContent[] contents, LikeDto likes)
 {
     [Required] public ArticleDto Article { get; set; } = article;
     [Required] public ArticleContent[] Contents { get; set; } = contents;
-    [Required] public int Likes { get; set; } = likes;
+    [Required] public LikeDto Likes { get; set; } = likes;
 }
 
 public class ArticleContent(int blockOrder, string content)

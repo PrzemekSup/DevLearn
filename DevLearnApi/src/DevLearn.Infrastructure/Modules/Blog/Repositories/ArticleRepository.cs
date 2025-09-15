@@ -9,7 +9,7 @@ namespace DevLearn.Infrastructure.Modules.Blog.Repositories;
 public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticleRepository
 {
     /// <inheritdoc/>
-    public async Task<ArticleListResponse> Get(int page = 1, int pageSize = 10)
+    public async Task<ArticleListResponse> GetAsync(int page = 1, int pageSize = 10)
     {
         var articles = await context.Articles
             .Include(x => x.Author)
@@ -27,7 +27,7 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
     }
 
     /// <inheritdoc/>
-    public async Task<ArticleListResponse> Search(List<string> tags, int page = 1, int pageSize = 10)
+    public async Task<ArticleListResponse> SearchAsync(List<string> tags, int page = 1, int pageSize = 10)
     {
         var articles = await context.Articles
             .Where(x => x.Tags.Any(t => tags.Contains(t.Name)))
@@ -48,7 +48,7 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
     }
 
     /// <inheritdoc/>
-    public async Task<ArticleDetailsDto?> Get(string slug)
+    public async Task<ArticleDetailsDto?> GetAsync(string slug, string? currentUserId)
     {
         var article = await context.Articles
             .Include(x => x.Author)
@@ -67,7 +67,24 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
             .Select(x => new Contract.Blog.Dtos.ArticleContent(x.BlockOrder, x.Content))
             .ToArray();
 
-        return new ArticleDetailsDto(articleDto, contents, article.Likes);
+        return new ArticleDetailsDto(articleDto, contents, GetLikeDto(article.Id, currentUserId));
+    }
+
+    /// <inheritdoc/>
+    public async Task<ArticleDto?> GetAsync(Guid id)
+    {
+        var article = await context.Articles
+            .Include(x => x.Author)
+            .Include(x => x.Category)
+            .Include(x => x.Tags)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (article == null)
+        {
+            return null;
+        }
+
+        return MapArticle(article);
     }
 
     /// <inheritdoc/>
@@ -82,11 +99,28 @@ public class ArticleRepository(BlogDbContext context, IMapper mapper) : IArticle
         return articleDb.Id;
     }
 
+    public async Task<string?> GetAuthorAsync(Guid authorId)
+    {
+        var author = await context.Authors.FirstOrDefaultAsync(x => x.Id.Equals(authorId));
+        return author != null ? author.DisplayName : null;
+    }
+
     private static ArticleDto MapArticle(Article article)
     {
         return new ArticleDto(article.Id, article.Title, article.Slug,
             article.Description, article.CreatedAt, article.UpdatedAt,
             new ArticleAuthorDto(article.Author.DisplayName, article.Author.Description),
             article.Category.Name, [.. article.Tags.Select(t => t.Name)], article.ReadTimeInMins, article.Views);
+    }
+
+    private LikeDto GetLikeDto(Guid articleId, string? currentUserId)
+    {
+        var likes = context.Likes
+            .Count(x => x.EntityType == (int)LikeEntityType.Article && x.EntityId == articleId);
+        var isLiked = currentUserId != null
+            ? context.Likes
+                .FirstOrDefault(x => x.EntityType == (int)LikeEntityType.Article && x.EntityId == articleId && x.UserId == currentUserId)
+            : null;
+        return new LikeDto(likes, isLiked != null);
     }
 }

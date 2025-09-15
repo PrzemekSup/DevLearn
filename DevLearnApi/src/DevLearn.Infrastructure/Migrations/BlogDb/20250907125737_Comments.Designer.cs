@@ -3,6 +3,7 @@ using System;
 using DevLearn.Infrastructure.Modules.Blog.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevLearn.Infrastructure.Migrations.BlogDb
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250907125737_Comments")]
+    partial class Comments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,6 +48,9 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
 
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("ReadTimeInMins")
                         .HasColumnType("integer");
@@ -158,28 +164,6 @@ namespace DevLearn.Infrastructure.Migrations.BlogDb
                     b.HasIndex("ArticleId");
 
                     b.ToTable("comments", "dev");
-                });
-
-            modelBuilder.Entity("DevLearn.Infrastructure.Modules.Blog.Entities.Like", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("EntityType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("likes", "dev");
                 });
 
             modelBuilder.Entity("DevLearn.Infrastructure.Modules.Blog.Entities.Tag", b =>
