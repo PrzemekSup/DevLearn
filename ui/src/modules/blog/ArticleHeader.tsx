@@ -62,7 +62,7 @@ export const ArticleHeader = ({ article, likes }: IArticleHeaderProps) => {
             {article.readTimeInMins && (
               <div className="flex items-center">
                 <Clock className="h-4 w-4 mr-1" />
-                {article.readTimeInMins}
+                {article.readTimeInMins} minut czytania
               </div>
             )}
             <div className="flex items-center">

@@ -20,7 +20,7 @@ public interface ICommentRepository
     /// <param name="commentId">Identifier of comment.</param>
     /// <param name="currentUserId">Identifier of the current user to verify "likes".</param>
     /// <returns>Comment or NULL, when it was not found.</returns>
-    CommentDto? GetAsync(Guid articleId, Guid commentId, string? currentUserId);
+    CommentDto? Get(Guid articleId, Guid commentId, string? currentUserId);
 
     /// <summary>
     /// Retrieves comment from database.

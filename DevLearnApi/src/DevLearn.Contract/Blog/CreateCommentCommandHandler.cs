@@ -50,7 +50,7 @@ public class CreateCommentCommandHandler(ICommentRepository commentRepository, I
 
         if (request.ParentCommentId.HasValue)
         {
-            var comment = commentRepository.GetAsync(request.ArticleId, request.ParentCommentId.Value, null);
+            var comment = commentRepository.Get(request.ArticleId, request.ParentCommentId.Value, null);
             if (comment == null)
             {
                 var errorMessage = $"Komentarz na który próbujesz odpowiedzieć, nie istnieje. ({request.ArticleId}; {request.ParentCommentId})";
