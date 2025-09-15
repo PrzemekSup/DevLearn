@@ -42,7 +42,7 @@ public class AuthService(UserManager<ApplicationUser> userManager,
 
         var confirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var encodedToken = WebUtility.UrlEncode(confirmToken);
-        await emailService.SendConfirmationEmailAsync(user.Email, user.Id, encodedToken);
+        await emailService.SendConfirmationEmailAsync(user.Id, user.Email, encodedToken);
 
         return new ValidationStateDto(true, $"Dziękujemy za rejestrację {user.UserName}. Wysłaliśmy wiadomość e-mail na '{user.Email}'. Proszę potwierdź swoje konto.", []);
     }
