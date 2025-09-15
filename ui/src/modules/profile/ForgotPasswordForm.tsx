@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Mail, Lock, User, Loader } from "lucide-react";
+import { Lock, User, Loader } from "lucide-react";
 import { useResetPassword } from "../../api/hooks/UserApiHooks";
 import { Error } from "../../components/common/Error";
 import { TextInput } from "../../components/inputs/TextInput";
-import { SmallCheckbox } from "../../components/inputs/SmallCheckbox";
 import { ValidationState } from "../../components/common/ValidationState";
 import { Success } from "../../components/common/Success";
 
@@ -24,7 +23,8 @@ export const ForgotPasswordForm = () => {
     (data) => {
       if (data.success) {
         setSuccessMessage(
-          data.successMessage || "Hasło zostało zmienione, może się zalogować."
+          data.successMessage ||
+            "Hasło zostało zmienione, możesz się zalogować."
         );
       } else {
         setError(data.errors?.join(", ") || "Wystąpił nieoczekiwany błąd.");
@@ -49,7 +49,7 @@ export const ForgotPasswordForm = () => {
 
     // Validation
     if (!password || !confirmPassword) {
-      setError("Uzupełnij pola.");
+      setError("Uzupełnij wszystkie pola.");
       return;
     }
 
